@@ -2,1070 +2,1121 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>100 историй · Страшные картинки</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>100 историй страха</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: #0a0a0f;
-      min-height: 100vh;
-      font-family: 'Courier New', monospace;
-      padding: 1rem;
-      position: relative;
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    html, body {
+      height: 100%;
+      width: 100%;
       overflow-x: hidden;
     }
-    body.flash { background: #ffffff !important; transition: 0s; }
-    body.win { background: #0a1a0a; box-shadow: inset 0 0 100px #00aa0044; }
-    body.danger { background: #1a0505; box-shadow: inset 0 0 150px #5f0000; }
-    body.sale-active { background: #0a0a1a; box-shadow: inset 0 0 150px #ffd70022; }
+    
+    body {
+      background: #0a0a0f;
+      font-family: 'Courier New', monospace;
+      padding: 0.5rem;
+      -webkit-font-smoothing: antialiased;
+      touch-action: manipulation;
+      overflow-y: auto;
+      font-size: 16px;
+    }
 
-    /* СТРАШНЫЙ ФОН */
     #horror-bg {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       z-index: 0; pointer-events: none;
-      opacity: 0.15;
-      background-size: cover;
-      background-position: center;
-      transition: all 1s ease;
+      opacity: 0.12;
+      background: 
+        radial-gradient(circle at 20% 30%, #1a0a0a 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, #0a0a1a 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, #0a1a0a 0%, transparent 50%);
       filter: blur(2px) brightness(0.4) contrast(1.2);
-      image-rendering: pixelated;
     }
-    #horror-bg.active {
-      opacity: 0.25;
-      filter: blur(3px) brightness(0.3) contrast(1.4);
-    }
-    #horror-bg::after {
-      content: '';
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(ellipse at center, transparent 30%, #000000cc 100%);
-      pointer-events: none;
-    }
-
-    /* ВИДЕО-ЭФФЕКТ СТАРОЙ ПЛЁНКИ */
-    #vhs-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 1; pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.5s;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0,0,0,0.1) 0px,
-        rgba(0,0,0,0.1) 2px,
-        transparent 2px,
-        transparent 4px
-      );
-      mix-blend-mode: overlay;
-    }
-    #vhs-overlay.active {
-      opacity: 0.3;
-      animation: vhsNoise 0.05s infinite alternate;
-    }
-    @keyframes vhsNoise {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(2px, -2px); }
-    }
+    #horror-bg.active { opacity: 0.2; filter: blur(3px) brightness(0.3) contrast(1.4); }
 
     #name-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.95);
       display: flex; justify-content: center; align-items: center;
-      z-index: 99999; flex-direction: column; gap: 20px;
+      z-index: 99999; flex-direction: column; gap: 25px; padding: 20px;
     }
-    #name-overlay h2 { color: #ff4444; font-size: 2rem; text-shadow: 0 0 30px #ff0000; font-family: 'Courier New', monospace; }
-    #name-overlay input { padding: 15px 30px; font-size: 1.5rem; background: #1a1a2e; border: 2px solid #ff444488; color: #fff; border-radius: 50px; text-align: center; font-family: 'Courier New', monospace; width: 300px; }
-    #name-overlay button { padding: 15px 50px; font-size: 1.2rem; background: #ff2222; border: none; color: #fff; border-radius: 50px; cursor: pointer; font-family: 'Courier New', monospace; box-shadow: 0 0 30px #ff000066; transition: 0.3s; }
-    #name-overlay button:hover { transform: scale(1.05); box-shadow: 0 0 60px #ff0000aa; }
+    #name-overlay h2 { 
+      color: #ff4444; font-size: 2.2rem; 
+      text-shadow: 0 0 30px #ff0000; 
+      font-family: 'Courier New', monospace; text-align: center;
+    }
+    #name-overlay input { 
+      padding: 18px 30px; font-size: 1.6rem; 
+      background: #1a1a2e; border: 2px solid #ff444488; 
+      color: #fff; border-radius: 50px; text-align: center; 
+      font-family: 'Courier New', monospace; 
+      width: 300px; max-width: 90vw;
+    }
+    #name-overlay button { 
+      padding: 18px 50px; font-size: 1.4rem; 
+      background: #ff2222; border: none; color: #fff; 
+      border-radius: 50px; cursor: pointer; 
+      font-family: 'Courier New', monospace; 
+      box-shadow: 0 0 30px #ff000066;
+    }
 
-    #story-menu {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.92);
-      display: none; z-index: 99998; flex-direction: column;
-      padding: 15px; overflow-y: auto;
+    #main-screen {
+      width: 100%; max-width: 1200px;
+      margin: 0 auto; position: relative; z-index: 10;
     }
-    #story-menu.active { display: flex; }
-    #story-menu .menu-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 20px; flex-wrap: wrap; gap: 10px;
-    }
-    #story-menu h2 { color: #ff6666; font-size: 1.8rem; text-shadow: 0 0 40px #ff0000; font-family: 'Courier New', monospace; }
-    #story-menu .menu-stats { color: #4a4a6a; font-size: 0.8rem; }
-    #story-menu .menu-stats span { color: #ffaa44; }
 
-    .story-grid {
-      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-      gap: 10px; padding: 10px 20px; max-width: 1400px; width: 100%;
-      margin: 0 auto;
-    }
-    .story-card {
-      background: #16162a; border: 2px solid #2a2a4a;
-      border-radius: 12px; padding: 12px 8px;
-      cursor: pointer; transition: 0.3s;
-      text-align: center; color: #b8bcd0;
-      font-family: 'Courier New', monospace;
-      position: relative;
-      font-size: 0.75rem;
-      overflow: hidden;
-      min-height: 120px;
-    }
-    .story-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background-size: cover;
-      background-position: center;
-      opacity: 0.15;
-      transition: opacity 0.3s;
-      z-index: 0;
-      filter: blur(1px) brightness(0.6);
-    }
-    .story-card:hover::before { opacity: 0.3; }
-    .story-card > * { position: relative; z-index: 1; }
-    .story-card:hover { transform: scale(1.05); border-color: #ff4444; box-shadow: 0 0 40px #ff000044; }
-    .story-card .emoji { font-size: 1.8rem; display: block; margin-bottom: 2px; filter: drop-shadow(0 0 10px #ff000044); }
-    .story-card .title { font-size: 0.8rem; font-weight: bold; color: #ff8888; }
-    .story-card .desc { font-size: 0.55rem; opacity: 0.5; margin-top: 2px; }
-    .story-card .reward { font-size: 0.5rem; color: #ffaa44; margin-top: 2px; }
-    .story-card .difficulty { font-size: 0.5rem; margin-top: 2px; padding: 1px 6px; border-radius: 10px; display: inline-block; }
-    .story-card .difficulty.easy { color: #44aa44; background: #0a1a0a; }
-    .story-card .difficulty.medium { color: #ffaa44; background: #1a1a00; }
-    .story-card .difficulty.hard { color: #ff4444; background: #1a0000; }
-    .story-card .difficulty.extreme { color: #ff00ff; background: #1a001a; }
-    .story-card .cat-tag { position: absolute; top: 2px; left: 4px; font-size: 0.45rem; opacity: 0.3; z-index: 2; }
-    .story-card .story-id { position: absolute; top: 2px; right: 4px; font-size: 0.4rem; opacity: 0.2; z-index: 2; }
-    .story-card.completed { border-color: #44aa44; box-shadow: 0 0 20px #00aa0044; }
-    .story-card.completed .title::after { content: ' ✓'; color: #44aa44; }
-    .story-card.locked { opacity: 0.3; filter: grayscale(0.8); cursor: not-allowed; pointer-events: none; }
-    .story-card.locked .title::after { content: ' 🔒'; color: #ff4444; }
-    .story-card .premium-badge { position: absolute; bottom: 2px; right: 4px; font-size: 0.4rem; color: #ffd700; opacity: 0.5; z-index: 2; }
-
-    /* Категорийные цвета для карточек */
-    .story-card.cat-classic::before { background: linear-gradient(135deg, #1a0a0a, #2a0a0a); }
-    .story-card.cat-psycho::before { background: linear-gradient(135deg, #0a0a1a, #1a0a2a); }
-    .story-card.cat-occult::before { background: linear-gradient(135deg, #1a001a, #2a0a2a); }
-    .story-card.cat-scifi::before { background: linear-gradient(135deg, #000a1a, #001a2a); }
-    .story-card.cat-theater::before { background: linear-gradient(135deg, #1a0a0a, #2a1a0a); }
-    .story-card.cat-gothic::before { background: linear-gradient(135deg, #0a0a0a, #1a0a0a); }
-    .story-card.cat-deep::before { background: linear-gradient(135deg, #000a0a, #001a1a); }
-    .story-card.cat-travel::before { background: linear-gradient(135deg, #0a0a0a, #1a1a0a); }
-    .story-card.cat-mystic::before { background: linear-gradient(135deg, #0a001a, #1a002a); }
-    .story-card.cat-special::before { background: linear-gradient(135deg, #1a0a00, #2a1a00); }
-
-    @media (max-width: 1200px) { .story-grid { grid-template-columns: 1fr 1fr 1fr 1fr; } }
-    @media (max-width: 900px) { .story-grid { grid-template-columns: 1fr 1fr 1fr; } }
-    @media (max-width: 600px) { .story-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 400px) { .story-grid { grid-template-columns: 1fr; } }
-
-    /* ВЕРХНЯЯ ПАНЕЛЬ */
     #top-bar {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 6px 12px; background: rgba(15,15,26,0.85);
-      border-radius: 30px;
-      border: 1px solid #2a2a4a;
-      margin-bottom: 12px;
-      flex-wrap: wrap; gap: 8px;
-      max-width: 680px; margin-left: auto; margin-right: auto;
-      position: relative; z-index: 10;
-      backdrop-filter: blur(10px);
+      padding: 12px 20px; background: rgba(15,15,26,0.85);
+      border-radius: 30px; border: 1px solid #2a2a4a;
+      margin-bottom: 12px; flex-wrap: wrap; gap: 10px;
     }
     #currency-display {
-      display: flex; align-items: center; gap: 6px;
-      color: #ffaa44; font-size: 1.1rem;
-      font-family: 'Courier New', monospace;
+      display: flex; align-items: center; gap: 10px;
+      color: #ffaa44; font-size: 1.2rem;
+      font-family: 'Courier New', monospace; flex-wrap: wrap;
     }
-    #currency-display .coin { font-size: 1.3rem; }
-    #currency-display .amount { font-weight: bold; color: #ffcc66; }
-    #top-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-    #top-actions button {
-      background: rgba(22,22,42,0.8); border: 1px solid #2a2a4a;
-      color: #b8bcd0; padding: 4px 12px; border-radius: 20px;
-      cursor: pointer; font-family: 'Courier New', monospace;
-      font-size: 0.7rem; transition: 0.3s;
-      backdrop-filter: blur(5px);
+    #currency-display .amount { font-weight: bold; color: #ffcc66; font-size: 1.3rem; }
+    #currency-display .premium { color: #ffd700; font-size: 1.3rem; }
+    
+    .promo-section {
+      display: flex; gap: 10px; align-items: center; width: 100%;
     }
-    #top-actions button:hover { border-color: #ff8800; color: #ff8800; }
-    #top-actions .menu-btn { border-color: #4488ff66; color: #6688ff; }
-    #top-actions .menu-btn:hover { border-color: #4488ff; background: #000a1a; }
-    #top-actions .shop-btn { border-color: #ffd70066; color: #ffd700; }
-    #top-actions .shop-btn:hover { border-color: #ffd700; background: #1a1a00; }
+    #promo-input {
+      background: rgba(22,22,42,0.8); border: 2px solid #2a2a4a;
+      color: #b8bcd0; padding: 12px 18px; border-radius: 25px;
+      font-family: 'Courier New', monospace; font-size: 1rem;
+      flex: 1; min-width: 100px;
+    }
+    #promo-btn {
+      background: #ffd700; border: none; color: #000;
+      padding: 12px 20px; border-radius: 25px; cursor: pointer;
+      font-family: 'Courier New', monospace; font-size: 0.95rem;
+      font-weight: bold; white-space: nowrap;
+    }
+    #promo-btn.used { background: #44aa44; color: #fff; }
 
     #stats-bar {
-      display: flex; justify-content: center; gap: 20px;
-      font-size: 0.65rem; color: #4a4a5a;
+      display: flex; justify-content: center; gap: 25px;
+      font-size: 0.9rem; color: #4a4a5a;
       font-family: 'Courier New', monospace; flex-wrap: wrap;
-      max-width: 680px; margin: 0 auto 8px auto;
-      position: relative; z-index: 10;
+      margin-bottom: 12px;
+      padding: 8px;
+      background: rgba(15,15,26,0.5);
+      border-radius: 20px;
     }
-    #stats-bar .stat { display: flex; align-items: center; gap: 4px; }
-    #stats-bar .stat .num { color: #ff6666; font-weight: bold; }
+    #stats-bar .stat { display: flex; align-items: center; gap: 6px; }
+    #stats-bar .stat .num { color: #ff6666; font-weight: bold; font-size: 1rem; }
     #stats-bar .stat.win-stat .num { color: #44ff44; }
-    #stats-bar .stat.premium-stat .num { color: #ffd700; }
+
+    #content-container {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    #shop-section {
+      background: rgba(15,15,26,0.85);
+      border-radius: 20px;
+      border: 1px solid #1a1a2e;
+      padding: 16px;
+      width: 320px;
+      min-width: 280px;
+      flex-shrink: 0;
+    }
+    #shop-section .shop-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    #shop-section .shop-header h3 { 
+      color: #ffd700; font-size: 1.2rem; 
+      font-family: 'Courier New', monospace; 
+    }
+    .shop-grid-main {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .shop-item-main {
+      background: rgba(10,10,20,0.6);
+      border: 1px solid #1a1a2e;
+      border-radius: 14px;
+      padding: 12px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .shop-item-main.premium-story-item {
+      border-color: #ffd700;
+      background: rgba(20,15,0,0.4);
+    }
+    .shop-item-main .item-emoji { font-size: 1.8rem; }
+    .shop-item-main .item-info { flex: 1; min-width: 0; }
+    .shop-item-main .item-name { font-size: 0.9rem; color: #b8bcd0; font-weight: bold; }
+    .shop-item-main .item-desc { font-size: 0.75rem; color: #4a4a6a; margin-top: 4px; }
+    .shop-item-main .item-price-block { text-align: right; }
+    .shop-item-main .item-price { font-size: 1rem; color: #ffd700; font-weight: bold; display: block; }
+    .shop-item-main .item-bonus { font-size: 0.7rem; color: #ffcc66; }
+    .shop-item-main .buy-btn {
+      background: #ffd700; border: none; color: #000;
+      padding: 6px 14px; border-radius: 18px;
+      cursor: pointer; font-family: 'Courier New', monospace;
+      font-size: 0.7rem; font-weight: bold;
+      margin-top: 5px; width: 100%;
+    }
+    .shop-item-main .buy-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .shop-item-main .buy-btn.owned-btn { background: #44aa44; cursor: default; font-size: 0.8rem; }
+    .shop-item-main .discount-badge {
+      position: absolute; top: -6px; right: -6px;
+      background: #ff8800; color: #fff; font-size: 0.6rem;
+      padding: 3px 8px; border-radius: 10px; font-weight: bold;
+    }
+
+    #stories-section {
+      background: rgba(15,15,26,0.85);
+      border-radius: 20px;
+      border: 1px solid #1a1a2e;
+      padding: 16px;
+      flex: 1;
+      min-width: 0;
+    }
+    #stories-section .stories-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; flex-wrap: wrap; gap: 10px;
+    }
+    #stories-section .stories-header h3 { 
+      color: #6688ff; font-size: 1.2rem; 
+      font-family: 'Courier New', monospace; 
+    }
+    #stories-section .stories-header .count { color: #4a4a6a; font-size: 0.9rem; }
+    
+    #filter-buttons {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+      overflow-x: auto;
+    }
+    #filter-buttons button {
+      background: rgba(22,22,42,0.8); border: 2px solid #2a2a4a;
+      color: #4a4a6a; padding: 6px 12px; border-radius: 15px;
+      cursor: pointer; font-family: 'Courier New', monospace;
+      font-size: 0.7rem; white-space: nowrap;
+    }
+    #filter-buttons button.active { border-color: #6688ff; color: #6688ff; }
+
+    .stories-grid-main {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+      max-height: 65vh;
+      overflow-y: auto;
+    }
+
+    .story-card-main {
+      background: rgba(10,10,20,0.5);
+      border: 2px solid #1a1a2e;
+      border-radius: 14px;
+      padding: 12px 8px;
+      cursor: pointer;
+      text-align: center;
+      position: relative;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .story-card-main .emoji { font-size: 1.8rem; display: block; }
+    .story-card-main .title { font-size: 0.7rem; color: #b8bcd0; margin-top: 6px; line-height: 1.3; font-weight: bold; }
+    .story-card-main .status { font-size: 0.6rem; margin-top: 4px; }
+    .story-card-main .status.completed { color: #44ff44; }
+    .story-card-main .status.locked { color: #ff4444; }
+    .story-card-main .status.available { color: #6688ff; }
+    .story-card-main .status.premium { color: #ffd700; }
+    .story-card-main .cat-tag { position: absolute; top: 4px; left: 6px; font-size: 0.5rem; opacity: 0.3; }
+    .story-card-main.locked-card { opacity: 0.4; filter: grayscale(0.8); cursor: not-allowed; }
+    .story-card-main.completed-card { border-color: #44aa44; }
+    .story-card-main.premium-card { border-color: #ffd700; }
+    .story-card-main.premium-card:hover { box-shadow: 0 0 20px #ffd70033; }
+    .story-card-main .price-tag {
+      position: absolute; top: -4px; right: -4px;
+      background: #ffd700; color: #000;
+      font-size: 0.35rem; padding: 2px 5px;
+      border-radius: 6px; font-weight: bold;
+    }
+
+    @media (max-width: 800px) {
+      #content-container {
+        flex-direction: column;
+      }
+      #shop-section {
+        width: 100%;
+        min-width: auto;
+      }
+      .shop-grid-main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .stories-grid-main {
+        grid-template-columns: repeat(3, 1fr);
+        max-height: 50vh;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .shop-grid-main {
+        grid-template-columns: 1fr;
+      }
+      .stories-grid-main {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .story-card-main {
+        min-height: 80px;
+      }
+    }
+
+    #game-screen {
+      display: none; width: 100%; max-width: 700px; margin: 0 auto;
+    }
+    #game-screen.active { display: block; }
 
     .game-container {
-      max-width: 680px; width: 100%; background: rgba(15,15,26,0.85);
-      border-radius: 2.5rem; padding: 1.5rem 1.8rem 2rem;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.9), 0 0 0 1px #2a2a3f inset;
-      margin: 0 auto; border: 1px solid #1a1a2e;
-      position: relative; z-index: 10;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s;
+      background: rgba(15,15,26,0.85);
+      border-radius: 25px; padding: 20px 18px 25px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.9);
+      border: 2px solid #1a1a2e;
     }
-    .game-container.danger-border { box-shadow: 0 0 60px #ff000066, 0 20px 40px #000000cc, 0 0 0 2px #aa2222 inset; }
-    .game-container.win-border { box-shadow: 0 0 60px #00aa0066, 0 20px 40px #000000cc, 0 0 0 2px #44aa44 inset; }
-    .game-container.premium-border { box-shadow: 0 0 60px #ffd70044, 0 20px 40px #000000cc, 0 0 0 2px #ffd70066 inset; }
+    .game-container.win-border { box-shadow: 0 0 60px #00aa0066, 0 20px 40px #000000cc; border-color: #44aa44; }
+    .game-container.premium-border { box-shadow: 0 0 60px #ffd70044, 0 20px 40px #000000cc; border-color: #ffd700; }
 
-    h1 { font-size: 1.2rem; font-weight: 400; color: #ccd0e0; text-align: center; border-bottom: 1px dashed #2a2a3f; padding-bottom: 0.5rem; margin-bottom: 0.8rem; font-family: 'Courier New', monospace; letter-spacing: 2px; }
-    h1.glitch-title { color: #ff3333; text-shadow: 0 0 30px #ff0000, 3px 0 5px #ff0000, -3px 0 5px #00ff00; animation: titleGlitch 0.2s infinite alternate; }
-    h1.win-title { color: #44ff44; text-shadow: 0 0 30px #00ff00, 3px 0 5px #00ff00, -3px 0 5px #00aa00; }
-    h1.premium-title { color: #ffd700; text-shadow: 0 0 30px #ffd700, 0 0 60px #ffd70044; }
+    h1 { 
+      font-size: 1.4rem; color: #ccd0e0; text-align: center; 
+      border-bottom: 2px dashed #2a2a3f; padding-bottom: 0.8rem; 
+      margin-bottom: 1rem; font-family: 'Courier New', monospace; 
+    }
+    h1.premium-title { color: #ffd700; text-shadow: 0 0 30px #ffd700; }
 
     .scene-box {
       background: rgba(10,10,20,0.8);
-      border-radius: 1.5rem; padding: 1.5rem 1.2rem;
+      border-radius: 18px; padding: 20px 16px;
       box-shadow: inset 0 4px 20px #000000;
       border: 1px solid #1a1a2e;
-      min-height: 160px;
-      position: relative;
-      overflow: hidden;
+      min-height: 180px;
     }
-    .scene-box::before {
-      content: '';
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background-size: cover;
-      background-position: center;
-      opacity: 0.1;
-      z-index: 0;
-      filter: blur(2px) brightness(0.3);
-      transition: all 1s;
-    }
-    .scene-box > * { position: relative; z-index: 1; }
+
     #story-text {
-      color: #c8ccdd; font-size: 1.05rem; line-height: 1.7;
+      color: #c8ccdd; font-size: 1.15rem; line-height: 1.9;
       white-space: pre-wrap; word-break: break-word;
-      font-weight: 300; text-shadow: 0 1px 3px #000000;
-      margin-bottom: 1.2rem;
-      font-family: 'Courier New', monospace;
+      margin-bottom: 1.5rem; font-family: 'Courier New', monospace;
     }
-    #story-text.shake { animation: textShake 0.05s infinite alternate; }
-    @keyframes textShake { 0% { transform: translate(-3px, -2px) scale(1.02); } 25% { transform: translate(3px, -1px) scale(0.98); } 50% { transform: translate(-1px, 3px) scale(1.01); } 75% { transform: translate(2px, -3px) scale(0.99); } 100% { transform: translate(-3px, 2px) scale(1.02); } }
-    #story-text.blood { color: #ff0000 !important; text-shadow: 0 0 20px #ff0000, 0 0 60px #ff000066 !important; }
-    #story-text.win-text { color: #44ff44 !important; text-shadow: 0 0 30px #00ff00, 0 0 60px #00aa0044 !important; }
 
-    .choices-area { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.3rem; }
+    .choices-area { display: flex; flex-direction: column; gap: 0.8rem; }
     .choice-btn {
-      background: rgba(22,22,42,0.9); border: 1px solid #2a2a4a; color: #b8bcd0;
-      padding: 0.6rem 1rem; border-radius: 3rem; font-size: 0.9rem;
-      font-weight: 300; text-align: left; cursor: pointer;
-      transition: all 0.15s ease; box-shadow: 0 4px 0 #0a0a12;
-      letter-spacing: 0.3px; line-height: 1.3; font-family: 'Courier New', monospace;
-      backdrop-filter: blur(5px);
+      background: rgba(22,22,42,0.9); border: 2px solid #2a2a4a; 
+      color: #b8bcd0; padding: 14px 18px; border-radius: 30px; 
+      font-size: 1.1rem; text-align: left; cursor: pointer;
+      font-family: 'Courier New', monospace; word-break: break-word;
+      font-weight: bold;
     }
-    .choice-btn:hover { background: #22223a; border-color: #4a4a7a; transform: scale(1.01); box-shadow: 0 6px 0 #0a0a12; color: #ffffff; }
-    .choice-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #0a0a12; }
-    .choice-btn.danger-option { border-color: #aa3333; background: #1a0a0a; color: #ff8888; box-shadow: 0 4px 0 #3f1111; }
-    .choice-btn.win-option { border-color: #44aa44; background: #0a1a0a; color: #88ff88; box-shadow: 0 4px 0 #1a3f1a; }
-    .choice-btn.final-btn { border-color: #aa88ff; background: #1a0a2a; color: #cc88ff; box-shadow: 0 4px 0 #3f1a5f; }
+    .choice-btn:active { transform: translateY(2px); }
+    .choice-btn.danger-option { border-color: #aa3333; background: #1a0a0a; color: #ff8888; }
+    .choice-btn.win-option { border-color: #44aa44; background: #0a1a0a; color: #88ff88; }
+    .choice-btn.final-btn { border-color: #aa88ff; background: #1a0a2a; color: #cc88ff; }
 
-    .reset-area { margin-top: 1.2rem; display: flex; justify-content: center; gap: 0.8rem; flex-wrap: wrap; }
-    #reset-btn, #menu-btn {
-      background: rgba(22,22,42,0.9); border: 1px solid #2a2a4a; color: #b8bcd0;
-      padding: 0.5rem 1.5rem; border-radius: 4rem; font-size: 0.8rem;
-      font-weight: 300; cursor: pointer; transition: 0.15s;
-      box-shadow: 0 4px 0 #0a0a12; letter-spacing: 1px;
-      font-family: 'Courier New', monospace;
-      backdrop-filter: blur(5px);
+    .reset-area { margin-top: 1.5rem; display: flex; justify-content: center; gap: 12px; }
+    #reset-btn, #back-menu-btn {
+      background: rgba(22,22,42,0.9); border: 2px solid #2a2a4a; 
+      color: #b8bcd0; padding: 12px 25px; border-radius: 30px; 
+      font-size: 1rem; cursor: pointer; font-family: 'Courier New', monospace;
+      font-weight: bold;
     }
-    #reset-btn:hover, #menu-btn:hover { background: #22223a; color: #fff; border-color: #4a4a7a; }
-    #reset-btn:active, #menu-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #0a0a12; }
-    .footer-note { margin-top: 0.8rem; text-align: center; color: #3a3a5a; font-size: 0.6rem; letter-spacing: 2px; opacity: 0.5; font-family: 'Courier New', monospace; }
 
-    #story-indicator { text-align: center; font-size: 0.6rem; color: #4a4a6a; margin-bottom: 0.6rem; letter-spacing: 2px; font-family: 'Courier New', monospace; }
-    #story-indicator .highlight { color: #ff6666; }
+    #game-indicator {
+      text-align: center; font-size: 0.8rem; color: #4a4a6a;
+      margin-bottom: 0.8rem; font-family: 'Courier New', monospace;
+    }
+    #game-indicator .highlight { color: #ff6666; font-size: 0.9rem; }
+    #game-indicator .back-link { color: #6688ff; cursor: pointer; margin-left: 12px; font-size: 0.9rem; }
 
-    /* МАГАЗИН */
-    #shop-overlay {
+    #notification {
+      position: fixed; top: 15%; left: 50%; transform: translateX(-50%);
+      background: #1a0a0a; border: 2px solid #ff444488;
+      padding: 18px 30px; border-radius: 20px;
+      color: #ff8888; font-family: 'Courier New', monospace;
+      font-size: 1.2rem; z-index: 99999;
+      opacity: 0; transition: all 0.5s;
+      pointer-events: none; text-align: center; max-width: 90%;
+      font-weight: bold;
+    }
+    #notification.active { opacity: 1; top: 20%; }
+    #notification.win { border-color: #44aa44; color: #88ff88; }
+    #notification.premium { border-color: #ffd700; color: #ffd700; }
+    #notification.special { border-color: #ff00ff; color: #ff88ff; }
+
+    #promo-animation {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.92);
-      display: none; z-index: 99997; flex-direction: column;
-      padding: 20px; overflow-y: auto;
-      align-items: center;
+      pointer-events: none; z-index: 99990;
+      display: none; justify-content: center; align-items: center;
     }
-    #shop-overlay.active { display: flex; }
-    #shop-overlay .shop-header {
-      display: flex; justify-content: space-between; align-items: center;
-      width: 100%; max-width: 900px; padding: 10px 20px;
-      flex-wrap: wrap; gap: 10px;
-    }
-    #shop-overlay h2 { color: #ffd700; font-size: 1.8rem; text-shadow: 0 0 40px #ffd70044; font-family: 'Courier New', monospace; }
-    #shop-overlay .shop-balance { color: #4a4a6a; font-size: 0.8rem; }
-    #shop-overlay .shop-balance span { color: #ffd700; }
-
-    .shop-grid {
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 15px; max-width: 900px; width: 100%; padding: 10px;
-    }
-    .shop-item {
-      background: #16162a; border: 2px solid #2a2a4a;
-      border-radius: 16px; padding: 15px 12px;
-      text-align: center; color: #b8bcd0;
-      font-family: 'Courier New', monospace;
-      transition: 0.3s; position: relative;
-    }
-    .shop-item:hover { border-color: #ffd700; transform: scale(1.03); box-shadow: 0 0 40px #ffd70022; }
-    .shop-item .item-emoji { font-size: 2.2rem; display: block; margin-bottom: 4px; }
-    .shop-item .item-name { font-weight: bold; color: #ffd700; font-size: 0.95rem; }
-    .shop-item .item-desc { font-size: 0.6rem; opacity: 0.6; margin: 4px 0; }
-    .shop-item .item-price { font-size: 0.8rem; color: #ffcc66; margin: 4px 0; }
-    .shop-item .item-price-real { font-size: 0.7rem; }
-    .shop-item .item-price-real .old-price { color: #ff4444; text-decoration: line-through; margin-right: 6px; }
-    .shop-item .item-price-real .new-price { color: #44ff44; font-weight: bold; }
-    .shop-item .item-status { font-size: 0.6rem; margin-top: 4px; }
-    .shop-item .item-status.owned { color: #44ff44; }
-    .shop-item .item-status.locked { color: #ff4444; }
-    .shop-item .buy-btn {
-      background: #ffd700; border: none; color: #000;
-      padding: 6px 20px; border-radius: 20px; cursor: pointer;
+    #promo-animation.show { display: flex; animation: promoFade 2s ease-in-out; }
+    #promo-animation .promo-text {
+      font-size: 3.5rem; color: #ffd700;
+      text-shadow: 0 0 40px #ffd700, 0 0 80px #ff8800;
       font-family: 'Courier New', monospace; font-weight: bold;
-      margin-top: 6px; transition: 0.3s;
     }
-    .shop-item .buy-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px #ffd70066; }
-    .shop-item .buy-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
-    .shop-item .buy-btn.owned-btn { background: #44aa44; cursor: default; }
-    .shop-item .buy-btn.owned-btn:hover { transform: none; box-shadow: none; }
-    .shop-item .best-value { position: absolute; top: -8px; right: -8px; background: #ff4444; color: #fff; font-size: 0.5rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
-    .shop-item .popular { position: absolute; top: -8px; left: -8px; background: #44aa44; color: #fff; font-size: 0.5rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
-    .shop-item .discount-badge { position: absolute; bottom: 50px; right: 8px; background: #ff8800; color: #fff; font-size: 0.5rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
-    .shop-item .bundle-badge { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: #aa44ff; color: #fff; font-size: 0.5rem; padding: 2px 12px; border-radius: 10px; font-weight: bold; }
-    .shop-item .sale-timer { font-size: 0.5rem; color: #ff8800; margin-top: 4px; }
-    .shop-item.bundle { border-color: #aa44ff66; background: #16102a; }
-    .shop-item.bundle:hover { border-color: #aa44ff; box-shadow: 0 0 40px #aa44ff22; }
-    .shop-item.bundle .item-name { color: #cc88ff; }
-    .shop-item.on-sale { border-color: #ff880066; }
-    .shop-item.on-sale:hover { border-color: #ff8800; box-shadow: 0 0 40px #ff880022; }
-    .shop-item .savings { font-size: 0.5rem; color: #44ff44; margin-top: 2px; }
+    @keyframes promoFade {
+      0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; }
+    }
 
-    @media (max-width: 700px) { .shop-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 500px) { .shop-grid { grid-template-columns: 1fr; } }
-
-    #shop-close { margin-top: 20px; padding: 10px 40px; background: #2a2a4a; border: none; border-radius: 30px; color: #fff; cursor: pointer; font-family: 'Courier New', monospace; font-size: 1rem; transition: 0.3s; }
-    #shop-close:hover { background: #3a3a5a; }
-
-    /* ПЛАТЁЖНОЕ ОКНО */
     #payment-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.95);
       display: none; justify-content: center; align-items: center;
-      z-index: 99996; flex-direction: column; padding: 20px;
+      z-index: 99996; padding: 20px;
     }
-    #payment-overlay.active { display: flex; }
+    #payment-overlay.show { display: flex; }
     .payment-box {
       background: #16162a; border: 2px solid #ffd700;
-      border-radius: 24px; padding: 30px 40px;
-      max-width: 450px; width: 100%;
-      box-shadow: 0 0 80px #ffd70022;
+      border-radius: 25px; padding: 30px; width: 100%; max-width: 450px;
       position: relative;
     }
-    .payment-box .payment-close { position: absolute; top: 10px; right: 20px; background: none; border: none; color: #4a4a6a; font-size: 1.5rem; cursor: pointer; font-family: 'Courier New', monospace; }
-    .payment-box .payment-close:hover { color: #ff4444; }
-    .payment-box h3 { color: #ffd700; font-size: 1.3rem; text-align: center; margin-bottom: 20px; font-family: 'Courier New', monospace; }
-    .payment-box .payment-item { text-align: center; color: #b8bcd0; font-size: 0.9rem; margin-bottom: 15px; }
-    .payment-box .payment-item .emoji { font-size: 2rem; display: block; }
-    .payment-box .payment-item .price { color: #ffd700; font-size: 1.3rem; }
-    .payment-box .payment-item .old-price { color: #ff4444; text-decoration: line-through; font-size: 0.9rem; margin-right: 8px; }
-    .payment-box .payment-item .discount-label { color: #44ff44; font-size: 0.8rem; }
-    .payment-box .payment-form { display: flex; flex-direction: column; gap: 12px; }
-    .payment-box .payment-form label { color: #4a4a6a; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
-    .payment-box .payment-form input { background: #0a0a14; border: 1px solid #2a2a4a; border-radius: 10px; padding: 10px 15px; color: #fff; font-family: 'Courier New', monospace; font-size: 0.9rem; width: 100%; }
-    .payment-box .payment-form input:focus { border-color: #ffd700; outline: none; }
-    .payment-box .payment-form .row { display: flex; gap: 10px; }
+    .payment-box .payment-close { 
+      position: absolute; top: 12px; right: 18px; background: none; 
+      border: none; color: #4a4a6a; font-size: 2rem; cursor: pointer; 
+    }
+    .payment-box h3 { 
+      color: #ffd700; font-size: 1.5rem; text-align: center; 
+      margin-bottom: 25px; font-family: 'Courier New', monospace; 
+    }
+    .payment-box .payment-item { text-align: center; color: #b8bcd0; font-size: 1.1rem; margin-bottom: 20px; }
+    .payment-box .payment-item .emoji { font-size: 2.5rem; display: block; }
+    .payment-box .payment-item .price { color: #ffd700; font-size: 1.6rem; }
+    .payment-box .payment-form { display: flex; flex-direction: column; gap: 15px; }
+    .payment-box .payment-form label { color: #4a4a6a; font-size: 0.9rem; font-weight: bold; }
+    .payment-box .payment-form input { 
+      background: #0a0a14; border: 2px solid #2a2a4a; border-radius: 12px; 
+      padding: 14px 18px; color: #fff; font-family: 'Courier New', monospace; 
+      font-size: 1.1rem; width: 100%;
+    }
+    .payment-box .payment-form .row { display: flex; gap: 12px; }
     .payment-box .payment-form .row > * { flex: 1; }
-    .payment-box .payment-submit { background: #ffd700; border: none; padding: 14px; border-radius: 12px; color: #000; font-weight: bold; font-size: 1.1rem; cursor: pointer; font-family: 'Courier New', monospace; margin-top: 10px; transition: 0.3s; }
-    .payment-box .payment-submit:hover { transform: scale(1.02); box-shadow: 0 0 40px #ffd70066; }
+    .payment-box .payment-submit { 
+      background: #ffd700; border: none; padding: 16px; border-radius: 15px; 
+      color: #000; font-weight: bold; font-size: 1.2rem; cursor: pointer; 
+      font-family: 'Courier New', monospace; margin-top: 15px;
+    }
     .payment-box .payment-submit:disabled { opacity: 0.3; cursor: not-allowed; }
-    .payment-box .payment-note { text-align: center; color: #4a4a6a; font-size: 0.6rem; margin-top: 15px; padding-top: 15px; border-top: 1px solid #1a1a2a; }
-    .payment-box .payment-note .test-mode { color: #ff8844; font-weight: bold; }
-    .payment-box .payment-status { text-align: center; font-size: 0.8rem; min-height: 25px; color: #ffaa44; margin-top: 5px; }
+    .payment-box .payment-note { 
+      text-align: center; color: #4a4a6a; font-size: 0.8rem; 
+      margin-top: 20px; padding-top: 20px; border-top: 1px solid #1a1a2a; 
+    }
+    .payment-box .payment-status { 
+      text-align: center; font-size: 1rem; min-height: 30px; 
+      color: #ffaa44; margin-top: 8px; font-weight: bold;
+    }
     .payment-box .payment-status.success { color: #44ff44; }
     .payment-box .payment-status.error { color: #ff4444; }
-
-    #noise-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: 9998; opacity: 0; transition: opacity 0.1s;
-      background: repeating-conic-gradient(#000 0% 25%, #fff 0% 50%) 0 0 / 3px 3px;
-      mix-blend-mode: overlay;
-    }
-    #noise-overlay.active { opacity: 0.25; animation: noiseAnim 0.02s infinite; }
-    @keyframes noiseAnim { 0% { background-position: 0 0; } 100% { background-position: 20px 40px; } }
-
-    #notification {
-      position: fixed; top: 20%; left: 50%; transform: translateX(-50%);
-      background: #1a0a0a; border: 2px solid #ff444488;
-      padding: 15px 30px; border-radius: 16px;
-      color: #ff8888; font-family: 'Courier New', monospace;
-      font-size: 1.1rem; z-index: 99999;
-      opacity: 0; transition: all 0.5s;
-      pointer-events: none; text-align: center;
-      max-width: 90%;
-      box-shadow: 0 0 60px #ff000044;
-    }
-    #notification.active { opacity: 1; top: 25%; }
-    #notification.win { border-color: #44aa44; color: #88ff88; box-shadow: 0 0 60px #00aa0044; }
-    #notification.danger { border-color: #ff4444; color: #ff4444; box-shadow: 0 0 60px #ff000066; }
-    #notification.premium { border-color: #ffd700; color: #ffd700; box-shadow: 0 0 60px #ffd70044; }
-    #notification.sale { border-color: #ff8800; color: #ff8800; box-shadow: 0 0 60px #ff880044; }
-
-    /* СТРАШНЫЙ ЭФФЕКТ ПРИ СМЕРТИ */
-    .death-flash {
-      animation: deathFlash 0.5s ease;
-    }
-    @keyframes deathFlash {
-      0% { background: #ff0000; opacity: 0.8; }
-      50% { background: #000000; opacity: 1; }
-      100% { background: transparent; opacity: 0; }
-    }
-
-    @media (max-width: 480px) {
-      .game-container { padding: 1rem 0.8rem; }
-      #story-text { font-size: 0.9rem; }
-      .choice-btn { font-size: 0.8rem; padding: 0.5rem 0.8rem; }
-      #reset-btn, #menu-btn { font-size: 0.7rem; padding: 0.4rem 1rem; }
-      #stats-bar { gap: 10px; font-size: 0.55rem; flex-wrap: wrap; }
-      #top-bar { flex-direction: column; align-items: stretch; gap: 4px; }
-      #top-actions { justify-content: center; }
-      #story-menu .menu-header { flex-direction: column; align-items: center; text-align: center; }
-      .payment-box { padding: 20px; }
-      .payment-box .payment-form .row { flex-direction: column; }
-    }
   </style>
 </head>
 <body>
 
-<!-- СТРАШНЫЙ ФОН -->
 <div id="horror-bg"></div>
-<div id="vhs-overlay"></div>
-
-<!-- НОТИФИКАЦИЯ -->
 <div id="notification"></div>
+<div id="promo-animation"><div class="promo-text">131984</div></div>
 
-<!-- ИМЯ -->
 <div id="name-overlay">
   <h2>👁️ КТО ТЫ?</h2>
-  <input type="text" id="name-input" placeholder="Введите имя..." maxlength="20" autofocus>
+  <input type="text" id="name-input" placeholder="Введите имя..." maxlength="20" autocomplete="off">
   <button id="name-submit">ВОЙТИ В СТРАХ</button>
 </div>
 
-<!-- МЕНЮ 100 ИСТОРИЙ -->
-<div id="story-menu">
-  <div class="menu-header">
-    <h2>📖 100 ИСТОРИЙ СТРАХА</h2>
-    <div class="menu-stats">
-      Пройдено: <span id="menuCompleted">0</span>/100
-      | 💀 <span id="menuCurrency">0</span>
-      | 🏆 <span id="menuWins">0</span>
-      | <span style="color:#ffd700;">👑</span> <span id="menuPremium">0</span>
+<div id="main-screen">
+  <div id="top-bar">
+    <div id="currency-display">
+      <span>💀</span>
+      <span class="amount" id="mainCurrency">0</span>
+      <span class="premium">👑</span>
+      <span class="amount" id="mainPremium">0</span>
+    </div>
+    <div class="promo-section">
+      <input type="text" id="promo-input" placeholder="Промокод" maxlength="20" autocomplete="off">
+      <button id="promo-btn">🎫 АКТИВИРОВАТЬ</button>
     </div>
   </div>
-  <div class="story-grid" id="storyGrid"></div>
-  <button id="menu-close" style="margin:15px auto;padding:10px 40px;background:#2a2a4a;border:none;border-radius:30px;color:#fff;cursor:pointer;font-family:'Courier New',monospace;font-size:0.9rem;width:fit-content;">✕ ЗАКРЫТЬ</button>
-</div>
 
-<!-- МАГАЗИН -->
-<div id="shop-overlay">
-  <div class="shop-header">
-    <h2>🛒 МАГАЗИН СТРАХА</h2>
-    <div class="shop-balance">
-      💀 <span id="shopCurrency">0</span>
-      | 👑 <span id="shopPremium">0</span>
-      <span style="margin-left:12px;color:#ff8800;font-size:0.7rem;" id="saleStatus">🔥 СКИДКИ ДО 50%</span>
+  <div id="stats-bar">
+    <div class="stat">💀 Смертей: <span class="num" id="mainDeaths">0</span></div>
+    <div class="stat win-stat">🏆 Побед: <span class="num" id="mainWins">0</span></div>
+    <div class="stat">📖 Пройдено: <span class="num" id="mainCompleted">0</span>/100</div>
+  </div>
+
+  <div id="content-container">
+    <div id="shop-section">
+      <div class="shop-header">
+        <h3>🛒 МАГАЗИН</h3>
+        <span style="color:#ff8800;font-size:0.8rem;">🔥 СКИДКИ</span>
+      </div>
+      <div class="shop-grid-main" id="mainShopGrid"></div>
+    </div>
+
+    <div id="stories-section">
+      <div class="stories-header">
+        <h3>📖 ВСЕ ИСТОРИИ</h3>
+        <span class="count" id="mainStoryCount">0 из 100</span>
+      </div>
+      <div id="filter-buttons">
+        <button class="active" data-filter="all">Все</button>
+        <button data-filter="classic">🏚️ Классика</button>
+        <button data-filter="psycho">🧠 Психология</button>
+        <button data-filter="occult">🕯️ Оккультизм</button>
+        <button data-filter="scifi">🚀 Фантастика</button>
+        <button data-filter="theater">🎭 Театр</button>
+        <button data-filter="gothic">🏰 Готика</button>
+        <button data-filter="deep">🌊 Глубины</button>
+        <button data-filter="travel">🚂 Поездки</button>
+        <button data-filter="mystic">🔮 Мистика</button>
+        <button data-filter="special">🎮 Специальные</button>
+        <button data-filter="premium" style="border-color:#ffd700;color:#ffd700;">👑 Premium</button>
+      </div>
+      <div class="stories-grid-main" id="mainStoriesGrid"></div>
     </div>
   </div>
-  <div class="shop-grid" id="shopGrid"></div>
-  <button id="shop-close">✕ ЗАКРЫТЬ</button>
 </div>
 
-<!-- ПЛАТЁЖНОЕ ОКНО -->
+<div id="game-screen">
+  <div class="game-container" id="gameContainer">
+    <div id="game-indicator">
+      📖 <span class="highlight" id="gameStoryName">История #1</span>
+      <span class="back-link" id="gameBackLink">← НА ГЛАВНУЮ</span>
+    </div>
+    <h1 id="gameTitle">🌲 ТЁМНЫЙ ЛЕС</h1>
+    <div class="scene-box">
+      <div id="story-text">Загрузка...</div>
+      <div id="choices-container" class="choices-area"></div>
+    </div>
+    <div class="reset-area">
+      <button id="reset-btn">⟳ ЗАНОВО</button>
+      <button id="back-menu-btn">← НА ГЛАВНУЮ</button>
+    </div>
+  </div>
+</div>
+
 <div id="payment-overlay">
   <div class="payment-box">
     <button class="payment-close" id="paymentClose">✕</button>
     <h3>💳 ОПЛАТА</h3>
     <div class="payment-item" id="paymentItem">
       <span class="emoji">🪙</span>
-      <div class="price">$0.99</div>
-      <div style="font-size:0.7rem;opacity:0.5;">100 Осколков страха</div>
+      <div class="price">99 ₽</div>
+      <div style="font-size:0.9rem;">100 Осколков страха</div>
     </div>
     <div class="payment-form">
-      <label>Номер карты (тестовый: 4242 4242 4242 4242)</label>
-      <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19">
+      <label>Номер карты</label>
+      <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19" inputmode="numeric">
       <div class="row">
         <div>
-          <label>Срок (ММ/ГГ)</label>
-          <input type="text" id="cardExpiry" placeholder="12/26" maxlength="5">
+          <label>Срок</label>
+          <input type="text" id="cardExpiry" placeholder="12/26" maxlength="5" inputmode="numeric">
         </div>
         <div>
           <label>CVC</label>
-          <input type="text" id="cardCvc" placeholder="123" maxlength="4">
+          <input type="text" id="cardCvc" placeholder="123" maxlength="4" inputmode="numeric">
         </div>
       </div>
-      <label>Имя владельца</label>
-      <input type="text" id="cardName" placeholder="IVAN IVANOV">
+      <label>Имя</label>
+      <input type="text" id="cardName" placeholder="ИВАН ИВАНОВ">
       <button class="payment-submit" id="paymentSubmit">💳 ОПЛАТИТЬ</button>
-      <div class="payment-status" id="paymentStatus">Заполните данные для оплаты</div>
+      <div class="payment-status" id="paymentStatus">Заполните данные</div>
       <div class="payment-note">
-        <span class="test-mode">🔬 ТЕСТОВЫЙ РЕЖИМ</span><br>
-        Деньги не списываются. Любые данные принимаются.
+        <span style="color:#ff8844;font-weight:bold;">🔬 ТЕСТОВЫЙ ОФЛАЙН-РЕЖИМ</span>
       </div>
     </div>
   </div>
-</div>
-
-<!-- ОВЕРЛЕИ -->
-<div id="noise-overlay"></div>
-
-<!-- ИГРА -->
-<div class="game-container" id="gameContainer">
-  <div id="top-bar">
-    <div id="currency-display">
-      <span class="coin">💀</span>
-      <span class="amount" id="currencyAmount">0</span>
-      <span style="margin-left:8px;color:#ffd700;font-size:0.8rem;">👑<span id="premiumAmount">0</span></span>
-      <span style="margin-left:8px;color:#ff8800;font-size:0.6rem;" id="saleIndicator">🔥</span>
-    </div>
-    <div id="top-actions">
-      <button class="shop-btn" id="shopBtn">🛒 МАГАЗИН</button>
-      <button class="menu-btn" id="menuBtn">📖 ВСЕ ИСТОРИИ</button>
-    </div>
-  </div>
-  <div id="stats-bar">
-    <div class="stat">💀 Смертей: <span class="num" id="deathCount">0</span></div>
-    <div class="stat win-stat">🏆 Побед: <span class="num" id="winCount">0</span></div>
-    <div class="stat">📖 Пройдено: <span class="num" id="completedCount">0</span>/100</div>
-    <div class="stat premium-stat">👑 Премиум: <span class="num" id="premiumBadge">Нет</span></div>
-  </div>
-  <div id="story-indicator">
-    📖 <span class="highlight" id="storyName">История #1</span>
-    <span style="margin-left:8px;font-size:0.5rem;color:#3a3a5a;" id="storyCatTag"></span>
-  </div>
-  <h1 id="gameTitle">🌲 ТЁМНЫЙ ЛЕС</h1>
-  <div class="scene-box" id="sceneBox">
-    <div id="story-text">Загрузка...</div>
-    <div id="choices-container" class="choices-area"></div>
-  </div>
-  <div class="reset-area">
-    <button id="reset-btn">⟳ ЗАНОВО</button>
-    <button id="menu-btn-bottom">📖 МЕНЮ</button>
-  </div>
-  <div class="footer-note" id="footerNote">▼ 100 ИСТОРИЙ. КАЖДАЯ УНИКАЛЬНА.</div>
 </div>
 
 <script>
-  (function() {
-    // ============================================================
-    // 0. ОСНОВНЫЕ ПАРАМЕТРЫ
-    // ============================================================
-    let playerName = '';
-    let currentStoryId = 'story_0';
-    let currency = 0;
-    let premiumCurrency = 0;
-    let completedStories = new Set();
-    let deathCount = 0;
-    let winCount = 0;
-    let isDead = false;
-    let isGameOver = false;
-    let isWin = false;
-    let currentState = 'start';
-    let isPremium = false;
-    let hasImmortality = false;
-    let allStoriesUnlocked = false;
-    let isSaleActive = true;
+(function() {
+  let playerName = '';
+  let currentStoryId = 'story_0';
+  let currency = 0;
+  let premiumCurrency = 0;
+  let completedStories = new Set();
+  let deathCount = 0;
+  let winCount = 0;
+  let isPremium = false;
+  let hasImmortality = false;
+  let allStoriesUnlocked = false;
+  let isSaleActive = true;
+  let currentFilter = 'all';
+  let purchasedItems = new Set();
+  let purchasedStories = new Set();
+  let promoCodesUsed = new Set();
+  let currentPaymentItem = null;
 
-    // ============================================================
-    // 1. ГЕНЕРАЦИЯ 100 ИСТОРИЙ
-    // ============================================================
-    function generate100Stories() {
-      const stories = [];
-      const categories = [
-        { id: 'classic', emoji: '🏚️', name: 'Классический' },
-        { id: 'psycho', emoji: '🧠', name: 'Психологический' },
-        { id: 'occult', emoji: '🕯️', name: 'Оккультный' },
-        { id: 'scifi', emoji: '🚀', name: 'Фантастика' },
-        { id: 'theater', emoji: '🎭', name: 'Театральный' },
-        { id: 'gothic', emoji: '🏰', name: 'Готический' },
-        { id: 'deep', emoji: '🌊', name: 'Глубины' },
-        { id: 'travel', emoji: '🚂', name: 'Путешествия' },
-        { id: 'mystic', emoji: '🔮', name: 'Мистический' },
-        { id: 'special', emoji: '🎮', name: 'Специальные' }
-      ];
-      
-      const titles = [
-        'Тёмный лес', 'Заброшенный дом', 'Кладбище', 'Склеп', 'Подземелье',
-        'Больница', 'Санаторий', 'Зеркальная комната', 'Театр марионеток',
-        'Космический корабль', 'Подводная станция', 'Лаборатория',
-        'Театр', 'Опера', 'Маскарад', 'Особняк', 'Замок',
-        'Глубина', 'Кракен', 'Батискаф', 'Поезд', 'Самолёт', 'Корабль',
-        'Комната предсказаний', 'Магия', 'Проклятие', 'Комната 131984'
-      ];
-      
-      let id = 0;
-      for (const cat of categories) {
-        for (let i = 0; i < 10; i++) {
-          const title = titles[(id + i) % titles.length];
-          const emojis = ['🌲','🏚️','🪦','🕯️','🔮','🏥','🎭','🚀','🌊','🚂','🏰','👻','🪓','🗡️','📖','💀','🦇','🌙','🌀','⚰️'];
-          const emoji = emojis[(id + i) % emojis.length];
-          const difficulty = ['easy','medium','medium','hard','hard','extreme'][Math.floor(Math.random() * 6)];
-          const reward = [30,35,40,45,50,55,60,70,80,100][Math.floor(Math.random() * 10)];
-          stories.push({
-            id: 'story_' + id,
-            category: cat.id,
-            categoryName: cat.name,
-            categoryEmoji: cat.emoji,
-            emoji: emoji,
-            title: title + (i > 0 ? ' ' + (i + 1) : ''),
-            desc: 'Страшная история #' + (id + 1),
-            difficulty: difficulty,
-            reward: reward,
-            locked: (cat.id === 'special' && id < 90) ? true : false,
-            index: id
-          });
-          id++;
+  function generate100Stories() {
+    const stories = [];
+    const categories = [
+      { id: 'classic', emoji: '🏚️', name: 'Классический' },
+      { id: 'psycho', emoji: '🧠', name: 'Психологический' },
+      { id: 'occult', emoji: '🕯️', name: 'Оккультный' },
+      { id: 'scifi', emoji: '🚀', name: 'Фантастика' },
+      { id: 'theater', emoji: '🎭', name: 'Театральный' },
+      { id: 'gothic', emoji: '🏰', name: 'Готический' },
+      { id: 'deep', emoji: '🌊', name: 'Глубины' },
+      { id: 'travel', emoji: '🚂', name: 'Путешествия' },
+      { id: 'mystic', emoji: '🔮', name: 'Мистический' },
+      { id: 'special', emoji: '🎮', name: 'Специальные' }
+    ];
+    
+    const titles = [
+      'Тёмный лес', 'Заброшенный дом', 'Кладбище', 'Склеп', 'Подземелье',
+      'Больница', 'Санаторий', 'Зеркальная комната', 'Театр марионеток',
+      'Космический корабль', 'Подводная станция', 'Лаборатория',
+      'Театр', 'Опера', 'Маскарад', 'Особняк', 'Замок',
+      'Глубина', 'Кракен', 'Батискаф', 'Поезд', 'Самолёт', 'Корабль',
+      'Комната предсказаний', 'Магия', 'Проклятие', 'Комната 131984'
+    ];
+
+    // Список премиум-историй (ID)
+    const premiumStoryIds = [
+      'story_7', 'story_13', 'story_21', 'story_28', 'story_35',
+      'story_42', 'story_49', 'story_56', 'story_63', 'story_70',
+      'story_77', 'story_84', 'story_91', 'story_95', 'story_99'
+    ];
+
+    // Цены на премиум-истории
+    const premiumPrices = [99, 149, 199, 249, 299, 349, 399, 449, 499, 599, 699, 799, 899, 999, 1299];
+    
+    let id = 0;
+    let premiumIndex = 0;
+    for (const cat of categories) {
+      for (let i = 0; i < 10; i++) {
+        const storyId = 'story_' + id;
+        const emojis = ['🌲','🏚️','🪦','🕯️','🔮','🏥','🎭','🚀','🌊','🚂','🏰','👻','🪓','🗡️','📖','💀','🦇','🌙','🌀','⚰️'];
+        const isPremium = premiumStoryIds.includes(storyId);
+        
+        stories.push({
+          id: storyId,
+          category: cat.id,
+          categoryName: cat.name,
+          categoryEmoji: cat.emoji,
+          emoji: emojis[(id + i) % emojis.length],
+          title: titles[(id + i) % titles.length] + (i > 0 ? ' ' + (i + 1) : ''),
+          reward: [40,45,50,55,60,65,70,80,90,100][Math.floor(Math.random() * 10)],
+          locked: (cat.id === 'special' && id < 90) ? true : false,
+          isPremium: isPremium,
+          premiumPrice: isPremium ? premiumPrices[premiumIndex % premiumPrices.length] : 0,
+          index: id
+        });
+        
+        if (isPremium) premiumIndex++;
+        id++;
+      }
+    }
+    return stories;
+  }
+
+  const allStories = generate100Stories();
+
+  const shopItems = [
+    { id: 'currency_100', name: '100 💀', desc: 'Базовый набор', price: 99, salePrice: 99, emoji: '🪙', type: 'currency', amount: 100, discount: 0 },
+    { id: 'currency_300', name: '300 💀', desc: '+10% бонус', price: 249, salePrice: 211, emoji: '🪙', type: 'currency', amount: 330, discount: 15 },
+    { id: 'currency_500', name: '500 💀', desc: '+20% бонус', price: 399, salePrice: 319, emoji: '🪙', type: 'currency', amount: 600, discount: 20 },
+    { id: 'currency_1000', name: '1000 💀', desc: '+30% бонус', price: 699, salePrice: 524, emoji: '🪙', type: 'currency', amount: 1300, discount: 25 },
+    { id: 'currency_2500', name: '2500 💀', desc: '+40% бонус', price: 1499, salePrice: 1049, emoji: '🪙', type: 'currency', amount: 3500, discount: 30 },
+    { id: 'currency_5000', name: '5000 💀', desc: '+50% бонус', price: 2499, salePrice: 1499, emoji: '🪙', type: 'currency', amount: 7500, discount: 40 },
+    { id: 'unlock_all', name: '🔓 Все истории', desc: 'Открывает все', price: 499, salePrice: 399, emoji: '🔑', type: 'unlock', discount: 20 },
+    { id: 'extreme_mode', name: '🎭 Экстрим', desc: 'Сложный режим', price: 299, salePrice: 239, emoji: '🎭', type: 'extreme', discount: 20 },
+    { id: 'immortality', name: '💀 Бессмертие', desc: 'Беск. жизни', price: 999, salePrice: 799, emoji: '💀', type: 'immortality', discount: 20 },
+    { id: 'premium_pass', name: '👑 Премиум', desc: 'ВСЁ СРАЗУ', price: 1999, salePrice: 1499, emoji: '👑', type: 'premium', discount: 25 }
+  ];
+
+  const promoCodes = {
+    '131984': { name: 'Секретный', reward: { type: 'special', currency: 1319, premiumCurrency: 84, unlockAll: true, immortality: true, description: '🎉 СЕКРЕТНЫЙ КОД АКТИВИРОВАН!' }},
+    'HORROR100': { name: 'Хоррор', reward: { type: 'currency', currency: 500, description: '🎃 +500 💀' }},
+    'PREMIUM': { name: 'Премиум', reward: { type: 'premium', currency: 1000, premiumCurrency: 200, description: '👑 ПРЕМИУМ!' }}
+  };
+
+  function saveGame() {
+    try {
+      const data = { currency, premiumCurrency, completedStories: [...completedStories], deathCount, winCount, playerName, premiumStatus: { isPremium, hasImmortality, allStoriesUnlocked }, purchasedItems: [...purchasedItems], purchasedStories: [...purchasedStories], promoCodesUsed: [...promoCodesUsed] };
+      localStorage.setItem('h100_save', JSON.stringify(data));
+    } catch(e) {}
+  }
+
+  function loadGame() {
+    try {
+      const data = localStorage.getItem('h100_save');
+      if (data) {
+        const p = JSON.parse(data);
+        currency = p.currency || 0;
+        premiumCurrency = p.premiumCurrency || 0;
+        completedStories = new Set(p.completedStories || []);
+        deathCount = p.deathCount || 0;
+        winCount = p.winCount || 0;
+        playerName = p.playerName || '';
+        if (p.premiumStatus) {
+          isPremium = p.premiumStatus.isPremium || false;
+          hasImmortality = p.premiumStatus.hasImmortality || false;
+          allStoriesUnlocked = p.premiumStatus.allStoriesUnlocked || false;
         }
+        purchasedItems = new Set(p.purchasedItems || []);
+        purchasedStories = new Set(p.purchasedStories || []);
+        promoCodesUsed = new Set(p.promoCodesUsed || []);
       }
-      return stories;
+    } catch(e) {}
+  }
+
+  const mainScreen = document.getElementById('main-screen');
+  const gameScreen = document.getElementById('game-screen');
+  const mainCurrency = document.getElementById('mainCurrency');
+  const mainPremium = document.getElementById('mainPremium');
+  const mainDeaths = document.getElementById('mainDeaths');
+  const mainWins = document.getElementById('mainWins');
+  const mainCompleted = document.getElementById('mainCompleted');
+  const mainStoryCount = document.getElementById('mainStoryCount');
+  const mainShopGrid = document.getElementById('mainShopGrid');
+  const mainStoriesGrid = document.getElementById('mainStoriesGrid');
+  const filterButtons = document.getElementById('filter-buttons');
+  const gameStoryName = document.getElementById('gameStoryName');
+  const gameTitle = document.getElementById('gameTitle');
+  const storyText = document.getElementById('story-text');
+  const choicesContainer = document.getElementById('choices-container');
+  const container = document.getElementById('gameContainer');
+  const notification = document.getElementById('notification');
+  const promoInput = document.getElementById('promo-input');
+  const promoBtn = document.getElementById('promo-btn');
+
+  function updateUI() {
+    mainCurrency.textContent = currency;
+    mainPremium.textContent = premiumCurrency;
+    mainDeaths.textContent = deathCount;
+    mainWins.textContent = winCount;
+    mainCompleted.textContent = completedStories.size;
+    mainStoryCount.textContent = completedStories.size + ' из 100';
+    
+    if (isPremium) {
+      container.classList.add('premium-border');
+      gameTitle.classList.add('premium-title');
+    } else {
+      container.classList.remove('premium-border');
+      gameTitle.classList.remove('premium-title');
     }
-
-    const allStories = generate100Stories();
-
-    // ============================================================
-    // 2. ГЕНЕРАЦИЯ СТРАШНЫХ КАРТИНОК
-    // ============================================================
-    const categoryColors = {
-      classic: 'darkred',
-      psycho: 'indigo',
-      occult: 'darkviolet',
-      scifi: 'darkblue',
-      theater: 'maroon',
-      gothic: 'black',
-      deep: 'darkcyan',
-      travel: 'darkolivegreen',
-      mystic: 'purple',
-      special: 'saddlebrown'
-    };
-
-    // Генерация AI-изображения через Pollinations API
-    function generateHorrorImage(prompt) {
-      const encodedPrompt = encodeURIComponent(prompt);
-      return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=600&nologo=true&seed=${Date.now()}`;
+    
+    if (promoCodesUsed.has('131984')) {
+      promoInput.value = '131984';
+      promoBtn.textContent = '✅';
+      promoBtn.classList.add('used');
+      promoInput.disabled = true;
     }
+    
+    renderShop();
+    renderStories();
+    saveGame();
+  }
 
-    // Запасные изображения (встроенные CSS-градиенты)
-    function getFallbackStyle(category) {
-      const colors = {
-        classic: 'linear-gradient(135deg, #1a0000, #3a0a0a, #1a0000)',
-        psycho: 'linear-gradient(135deg, #0a001a, #1a0a3a, #0a001a)',
-        occult: 'linear-gradient(135deg, #1a001a, #3a0a3a, #1a001a)',
-        scifi: 'linear-gradient(135deg, #000a1a, #0a1a3a, #000a1a)',
-        theater: 'linear-gradient(135deg, #1a0a0a, #3a1a0a, #1a0a0a)',
-        gothic: 'linear-gradient(135deg, #0a0a0a, #1a0a0a, #0a0a0a)',
-        deep: 'linear-gradient(135deg, #000a0a, #0a1a1a, #000a0a)',
-        travel: 'linear-gradient(135deg, #0a0a0a, #1a1a0a, #0a0a0a)',
-        mystic: 'linear-gradient(135deg, #0a001a, #1a002a, #0a001a)',
-        special: 'linear-gradient(135deg, #1a0a00, #3a1a00, #1a0a00)'
-      };
-      return colors[category] || colors.classic;
-    }
+  function showNotification(text, type = 'danger', duration = 2500) {
+    notification.textContent = text;
+    notification.className = 'active ' + type;
+    clearTimeout(notification._timeout);
+    notification._timeout = setTimeout(() => { notification.className = ''; }, duration);
+  }
 
-    // Получение фона для истории
-    function getStoryBackground(story) {
-      const cat = story.category || 'classic';
-      const prompt = `${story.title}, horror atmosphere, dark, scary, eerie, cinematic, 4k`;
-      const aiUrl = generateHorrorImage(prompt);
-      const fallback = getFallbackStyle(cat);
-      return { aiUrl, fallback };
-    }
-
-    // Применение фона к элементу
-    function applyBackground(element, story, isActive = false) {
-      const bg = getStoryBackground(story);
+  function renderShop() {
+    mainShopGrid.innerHTML = '';
+    
+    // Добавляем премиум-истории в магазин
+    const premiumStories = allStories.filter(s => s.isPremium && !purchasedStories.has(s.id) && !allStoriesUnlocked);
+    
+    for (const story of premiumStories.slice(0, 3)) {
+      const div = document.createElement('div');
+      div.className = 'shop-item-main premium-story-item';
       
-      // Пробуем загрузить AI-изображение
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = function() {
-        element.style.backgroundImage = `url(${bg.aiUrl})`;
-        element.style.backgroundSize = 'cover';
-        element.style.backgroundPosition = 'center';
-        element.style.backgroundBlendMode = 'overlay';
-        if (isActive) element.classList.add('active');
-      };
-      img.onerror = function() {
-        // Если AI не загрузился — используем fallback
-        element.style.background = bg.fallback;
-        if (isActive) element.classList.add('active');
-      };
-      img.src = bg.aiUrl;
+      div.innerHTML = `
+        <span class="item-emoji">${story.emoji}</span>
+        <div class="item-info">
+          <div class="item-name">${story.title}</div>
+          <div class="item-desc">Премиум-история</div>
+        </div>
+        <div class="item-price-block">
+          <span class="item-price">${story.premiumPrice}₽</span>
+          <button class="buy-btn">КУПИТЬ</button>
+        </div>
+      `;
       
-      // Сразу показываем fallback, пока грузится AI
-      element.style.background = bg.fallback;
-      element.style.backgroundSize = 'cover';
-      element.style.backgroundPosition = 'center';
-      element.style.backgroundBlendMode = 'overlay';
-      if (isActive) element.classList.add('active');
+      div.querySelector('.buy-btn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        openPayment({ id: 'story_' + story.id, name: story.title, emoji: story.emoji, price: story.premiumPrice, salePrice: story.premiumPrice, type: 'story', storyId: story.id, discount: 0 });
+      });
+      
+      mainShopGrid.appendChild(div);
     }
-
-    // ============================================================
-    // 3. UI ЭЛЕМЕНТЫ
-    // ============================================================
-    const horrorBg = document.getElementById('horror-bg');
-    const vhsOverlay = document.getElementById('vhs-overlay');
-    const sceneBox = document.getElementById('sceneBox');
-    const storyText = document.getElementById('story-text');
-    const choicesContainer = document.getElementById('choices-container');
-    const resetBtn = document.getElementById('reset-btn');
-    const menuBtn = document.getElementById('menu-btn');
-    const menuBtnBottom = document.getElementById('menu-btn-bottom');
-    const shopBtn = document.getElementById('shopBtn');
-    const container = document.getElementById('gameContainer');
-    const notification = document.getElementById('notification');
-
-    const currencyAmount = document.getElementById('currencyAmount');
-    const premiumAmount = document.getElementById('premiumAmount');
-    const deathCountEl = document.getElementById('deathCount');
-    const winCountEl = document.getElementById('winCount');
-    const completedCountEl = document.getElementById('completedCount');
-    const premiumBadge = document.getElementById('premiumBadge');
-    const storyNameEl = document.getElementById('storyName');
-    const storyCatTag = document.getElementById('storyCatTag');
-    const saleIndicator = document.getElementById('saleIndicator');
-    const shopCurrency = document.getElementById('shopCurrency');
-    const shopPremium = document.getElementById('shopPremium');
-    const saleStatus = document.getElementById('saleStatus');
-
-    // ============================================================
-    // 4. СОХРАНЕНИЕ
-    // ============================================================
-    function saveGame() {
-      try {
-        localStorage.setItem('h100_currency', currency);
-        localStorage.setItem('h100_premium', premiumCurrency);
-        localStorage.setItem('h100_completed', JSON.stringify([...completedStories]));
-        localStorage.setItem('h100_deaths', deathCount);
-        localStorage.setItem('h100_wins', winCount);
-        localStorage.setItem('h100_player', playerName);
-        localStorage.setItem('h100_premium_status', JSON.stringify({ isPremium, hasImmortality, allStoriesUnlocked }));
-      } catch(e) {}
-    }
-
-    function loadGame() {
-      try {
-        const c = localStorage.getItem('h100_currency');
-        if (c) currency = parseInt(c) || 0;
-        const p = localStorage.getItem('h100_premium');
-        if (p) premiumCurrency = parseInt(p) || 0;
-        const comp = localStorage.getItem('h100_completed');
-        if (comp) completedStories = new Set(JSON.parse(comp) || []);
-        const d = localStorage.getItem('h100_deaths');
-        if (d) deathCount = parseInt(d) || 0;
-        const w = localStorage.getItem('h100_wins');
-        if (w) winCount = parseInt(w) || 0;
-        const pn = localStorage.getItem('h100_player');
-        if (pn) playerName = pn;
-        const ps = localStorage.getItem('h100_premium_status');
-        if (ps) {
-          const parsed = JSON.parse(ps);
-          isPremium = parsed.isPremium || false;
-          hasImmortality = parsed.hasImmortality || false;
-          allStoriesUnlocked = parsed.allStoriesUnlocked || false;
-        }
-      } catch(e) {}
-    }
-
-    // ============================================================
-    // 5. ОБНОВЛЕНИЕ UI
-    // ============================================================
-    function updateUI() {
-      currencyAmount.textContent = currency;
-      premiumAmount.textContent = premiumCurrency;
-      deathCountEl.textContent = deathCount;
-      winCountEl.textContent = winCount;
-      completedCountEl.textContent = completedStories.size;
-      premiumBadge.textContent = isPremium ? '👑 Есть' : 'Нет';
+    
+    // Обычные товары
+    for (const item of shopItems) {
+      const div = document.createElement('div');
+      div.className = 'shop-item-main';
+      const price = isSaleActive ? item.salePrice : item.price;
+      const discount = isSaleActive && item.discount > 0;
+      let statusText = 'КУПИТЬ';
+      let disabled = false;
+      let ownedClass = '';
       
-      document.getElementById('menuCurrency').textContent = currency;
-      document.getElementById('menuWins').textContent = winCount;
-      document.getElementById('menuCompleted').textContent = completedStories.size;
-      document.getElementById('menuPremium').textContent = premiumCurrency;
-      
-      shopCurrency.textContent = currency;
-      shopPremium.textContent = premiumCurrency;
-      
-      if (isSaleActive) {
-        saleIndicator.textContent = '🔥';
-        saleStatus.textContent = '🔥 СКИДКИ ДО 50%';
-        document.body.classList.add('sale-active');
-      } else {
-        saleIndicator.textContent = '';
-        saleStatus.textContent = '🛒 Магазин';
-        document.body.classList.remove('sale-active');
+      if (item.type !== 'currency') {
+        const active = (item.type === 'unlock' && allStoriesUnlocked) ||
+                      (item.type === 'extreme' && isPremium) ||
+                      (item.type === 'immortality' && hasImmortality) ||
+                      (item.type === 'premium' && isPremium);
+        if (active) { statusText = '✓'; disabled = true; ownedClass = 'owned-btn'; }
       }
       
-      if (isPremium) {
-        container.classList.add('premium-border');
-        document.getElementById('gameTitle').classList.add('premium-title');
-      } else {
-        container.classList.remove('premium-border');
-        document.getElementById('gameTitle').classList.remove('premium-title');
-      }
+      div.innerHTML = `
+        ${discount ? '<span class="discount-badge">-' + item.discount + '%</span>' : ''}
+        <span class="item-emoji">${item.emoji}</span>
+        <div class="item-info">
+          <div class="item-name">${item.name}</div>
+          <div class="item-desc">${item.desc}</div>
+        </div>
+        <div class="item-price-block">
+          <span class="item-price">${discount ? '<span style="font-size:0.7rem;color:#ff4444;text-decoration:line-through;">' + item.price + '₽</span> ' : ''}${price}₽</span>
+          ${item.type === 'currency' ? '<span class="item-bonus">+' + item.amount + ' 💀</span>' : ''}
+          <button class="buy-btn ' + ownedClass + '" ' + (disabled ? 'disabled' : '') + '>' + statusText + '</button>
+        </div>
+      `;
       
-      saveGame();
-    }
-
-    function showNotification(text, type = 'danger', duration = 2500) {
-      notification.textContent = text;
-      notification.className = 'active ' + type;
-      clearTimeout(notification._timeout);
-      notification._timeout = setTimeout(() => {
-        notification.className = '';
-      }, duration);
-    }
-
-    // ============================================================
-    // 6. ЗВУКИ
-    // ============================================================
-    let audioCtx = null;
-
-    function playTone(freq, duration, type = 'sine', vol = 0.15) {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch(e) {}
-    }
-
-    function playScare() { playTone(120, 0.6, 'sawtooth', 0.2); }
-    function playVictory() { playTone(523, 0.2, 'sine', 0.1); setTimeout(() => playTone(659, 0.2, 'sine', 0.1), 200); setTimeout(() => playTone(784, 0.3, 'sine', 0.12), 400); }
-    function playCoin() { playTone(1000, 0.1, 'sine', 0.08); setTimeout(() => playTone(1200, 0.1, 'sine', 0.06), 100); }
-
-    // ============================================================
-    // 7. ГЕНЕРАЦИЯ СЦЕН ДЛЯ ИСТОРИИ
-    // ============================================================
-    function generateStoryScenes(story) {
-      return {
-        start: {
-          text: `${playerName}, ты в ${story.title}.\n${story.desc}. Ты чувствуешь, что за тобой наблюдают.\n\nЧто будешь делать?`,
-          choices: [
-            { text: '🔦 Исследовать тёмный угол', next: 'scene_2', risk: 0.6 },
-            { text: '🕯️ Осторожно осмотреться', next: 'scene_3' },
-            { text: '🏃 Бежать к выходу', next: 'scene_4', risk: 0.4 }
-          ]
-        },
-        scene_2: {
-          text: `${playerName}, ты идёшь в темноту... Ты слышишь шаги.\nКто-то приближается.`,
-          choices: [
-            { text: '⚔️ Вступить в бой', next: 'scene_fight' },
-            { text: '🔦 Использовать свет', next: 'scene_light' }
-          ]
-        },
-        scene_fight: {
-          text: `${playerName}, ты вступаешь в бой... Это была ловушка!\nТьма поглощает тебя.`,
-          choices: [{ text: '💀 КОНЕЦ', next: 'ending_lose1' }]
-        },
-        scene_light: {
-          text: `${playerName}, ты включаешь свет и видишь... выход!\nТы бежишь и выбираешься!\n\n🏆 ПОБЕДА!`,
-          choices: [{ text: '🏆 ЗАВЕРШИТЬ', next: 'ending_win' }]
-        },
-        scene_3: {
-          text: `${playerName}, ты осторожно осматриваешься.\nТы находишь старый сундук. Внутри что-то блестит.`,
-          choices: [
-            { text: '📦 Открыть сундук', next: 'scene_chest' },
-            { text: '🔙 Вернуться', next: 'start' }
-          ]
-        },
-        scene_chest: {
-          text: `${playerName}, ты открываешь сундук и находишь древний артефакт!\nТы чувствуешь прилив сил.\n\n🏆 ПОБЕДА!`,
-          choices: [{ text: '🏆 ЗАВЕРШИТЬ', next: 'ending_win' }]
-        },
-        scene_4: {
-          text: `${playerName}, ты бежишь к выходу... Он закрыт.\nТы слышишь, как кто-то смеётся за спиной.`,
-          choices: [
-            { text: '🔦 Оглянуться', next: 'scene_look' },
-            { text: '💀 Сдаться', next: 'ending_lose2' }
-          ]
-        },
-        scene_look: {
-          text: `${playerName}, ты оборачиваешься... Там тысячи теней.\nТы понимаешь, что никогда не уйдёшь.`,
-          choices: [{ text: '💀 КОНЕЦ', next: 'ending_lose3' }]
-        },
-        ending_win: {
-          text: `🏆 ПОБЕДА 🏆\n\n${playerName}, ты прошёл "${story.title}"!\nТы выжил и победил страх.`,
-          choices: [{ text: '📖 В меню', next: 'menu' }]
-        },
-        ending_lose1: {
-          text: `💀 ПОРАЖЕНИЕ 💀\n\n${playerName}, тьма поглотила тебя.\nТы стал частью ${story.title}.`,
-          choices: [{ text: '📖 В меню', next: 'menu' }]
-        },
-        ending_lose2: {
-          text: `💀 ПОРАЖЕНИЕ 💀\n\n${playerName}, ты стал частью истории.\nТы — ещё один призрак в ${story.title}.`,
-          choices: [{ text: '📖 В меню', next: 'menu' }]
-        },
-        ending_lose3: {
-          text: `💀 ПОРАЖЕНИЕ 💀\n\n${playerName}, ты исчез навсегда.\nНикто не найдёт тебя в ${story.title}.`,
-          choices: [{ text: '📖 В меню', next: 'menu' }]
-        },
-        game_over: {
-          text: '💀 ИГРА ОКОНЧЕНА',
-          choices: [{ text: '🔄 Заново', next: 'start' }]
-        }
-      };
-    }
-
-    const storyCache = {};
-
-    function getStoryScenes(story) {
-      const key = story.id;
-      if (!storyCache[key]) {
-        storyCache[key] = generateStoryScenes(story);
-      }
-      return storyCache[key];
-    }
-
-    // ============================================================
-    // 8. ОТРИСОВКА ИГРЫ
-    // ============================================================
-    function renderState(stateId) {
-      const story = allStories.find(s => s.id === currentStoryId);
-      if (!story) {
-        storyText.textContent = 'Ошибка: история не найдена.';
-        choicesContainer.innerHTML = '';
-        return;
-      }
-
-      // Обновляем фон
-      applyBackground(horrorBg, story, true);
-      applyBackground(sceneBox, story, false);
-      
-      // VHS-эффект при страхе
-      if (stateId === 'scene_fight' || stateId === 'ending_lose1' || stateId === 'ending_lose2' || stateId === 'ending_lose3') {
-        vhsOverlay.classList.add('active');
-        setTimeout(() => vhsOverlay.classList.remove('active'), 2000);
-      }
-
-      const scenes = getStoryScenes(story);
-      const node = scenes[stateId];
-      if (!node) {
-        storyText.textContent = 'Ошибка: сцена не найдена.';
-        choicesContainer.innerHTML = '';
-        return;
-      }
-
-      if (stateId === 'ending_win') {
-        isWin = true;
-        winCount++;
-        if (!completedStories.has(story.id)) {
-          completedStories.add(story.id);
-        }
-        const reward = story.reward || 50;
-        currency += reward;
-        showNotification(`🏆 ПОБЕДА! +${reward} 💀`, 'win', 3000);
-        playVictory();
-        document.body.classList.add('win');
-        container.classList.add('win-border');
-        updateUI();
-        saveGame();
-        renderMenu();
-      } else if (stateId.startsWith('ending_lose')) {
-        isGameOver = true;
-        deathCount++;
-        // Страшный эффект при смерти
-        document.body.classList.add('danger');
-        document.body.classList.add('flash');
-        setTimeout(() => document.body.classList.remove('flash'), 500);
-        if (!hasImmortality) {
-          showNotification('💀 ТЫ ПРОИГРАЛ...', 'danger', 2000);
-        } else {
-          showNotification('💀 Амулет бессмертия спас тебя!', 'premium', 2000);
-        }
-        updateUI();
-        saveGame();
-        // Включаем VHS эффект
-        vhsOverlay.classList.add('active');
-        setTimeout(() => vhsOverlay.classList.remove('active'), 3000);
-      } else if (stateId === 'start') {
-        isGameOver = false;
-        isWin = false;
-        isDead = false;
-        document.body.classList.remove('win', 'danger');
-        container.classList.remove('win-border', 'danger-border');
-        vhsOverlay.classList.remove('active');
-      }
-
-      storyText.textContent = node.text;
-
-      choicesContainer.innerHTML = '';
-      if (node.choices && node.choices.length > 0) {
-        node.choices.forEach((choice) => {
-          const btn = document.createElement('button');
-          btn.className = 'choice-btn';
-          
-          if (choice.risk) {
-            const chance = Math.round((1 - choice.risk) * 100);
-            btn.textContent = choice.text + ` ⚡${chance}%`;
-            btn.classList.add('danger-option');
-          } else {
-            btn.textContent = choice.text;
-          }
-
-          if (choice.text.includes('ПОБЕДА') || choice.text.includes('🏆')) btn.classList.add('win-option');
-          if (choice.text.includes('КОНЕЦ') || choice.text.includes('💀')) btn.classList.add('danger-option');
-          if (choice.next === 'menu') btn.classList.add('final-btn');
-
-          btn.addEventListener('click', function() {
-            const nextId = choice.next;
-            
-            if (choice.risk) {
-              if (Math.random() > choice.risk) {
-                showNotification('💥 РИСК НЕ ОПРАВДАЛСЯ!', 'danger', 1500);
-                playScare();
-                renderState('ending_lose1');
-                return;
-              } else {
-                showNotification('✅ РИСК ОПРАВДАЛСЯ!', 'win', 1000);
-              }
-            }
-
-            if (nextId === 'menu') {
-              document.getElementById('story-menu').classList.add('active');
-              return;
-            }
-            
-            if (scenes[nextId]) {
-              renderState(nextId);
-            } else {
-              renderState('ending_lose1');
-            }
-          });
-          choicesContainer.appendChild(btn);
+      if (!disabled) {
+        div.querySelector('.buy-btn').addEventListener('click', function(e) {
+          e.stopPropagation();
+          openPayment(item);
         });
       }
+      
+      mainShopGrid.appendChild(div);
+    }
+  }
 
-      updateUI();
+  function renderStories() {
+    mainStoriesGrid.innerHTML = '';
+    let filtered = allStories;
+    
+    if (currentFilter === 'premium') {
+      filtered = allStories.filter(s => s.isPremium);
+    } else if (currentFilter !== 'all') {
+      filtered = allStories.filter(s => s.category === currentFilter);
+    }
+    
+    for (const story of filtered) {
+      const card = document.createElement('div');
+      card.className = 'story-card-main';
+      const completed = completedStories.has(story.id);
+      const isPremiumLocked = story.isPremium && !purchasedStories.has(story.id) && !allStoriesUnlocked;
+      const locked = story.locked && !completed && !allStoriesUnlocked;
+      
+      if (completed) card.classList.add('completed-card');
+      if (locked) card.classList.add('locked-card');
+      if (isPremiumLocked) card.classList.add('premium-card');
+      
+      let status = completed ? '✓' : locked ? '🔒' : isPremiumLocked ? '💰' : '▶';
+      let statusClass = completed ? 'completed' : locked ? 'locked' : isPremiumLocked ? 'premium' : 'available';
+      
+      card.innerHTML = `
+        <span class="cat-tag">${story.categoryEmoji}</span>
+        <span class="emoji">${story.emoji}</span>
+        <div class="title">${story.title}</div>
+        ${isPremiumLocked ? '<div class="price-tag">' + story.premiumPrice + '₽</div>' : ''}
+        <div class="status ${statusClass}">${status}</div>
+      `;
+      
+      card.addEventListener('click', function() {
+        if (locked) {
+          showNotification('🔒 Заблокировано!', 'danger', 2000);
+          return;
+        }
+        if (isPremiumLocked) {
+          showNotification('💰 Премиум-история! Купите в магазине.', 'premium', 3000);
+          return;
+        }
+        startStory(story.id);
+      });
+      
+      mainStoriesGrid.appendChild(card);
+    }
+  }
+
+  function startStory(storyId) {
+    const story = allStories.find(s => s.id === storyId);
+    if (!story) return;
+    
+    currentStoryId = storyId;
+    mainScreen.style.display = 'none';
+    gameScreen.classList.add('active');
+    gameStoryName.textContent = story.emoji + ' ' + story.title;
+    gameTitle.textContent = story.emoji + ' ' + story.title;
+    renderGame('start');
+    updateUI();
+  }
+
+  function renderGame(state) {
+    const story = allStories.find(s => s.id === currentStoryId);
+    if (!story) return;
+
+    const scenes = {
+      start: {
+        text: playerName + ', ты в ' + story.title + '.\nТьма окутывает тебя.',
+        choices: [
+          { text: '🔦 Исследовать тёмный угол', next: 's2' },
+          { text: '🕯️ Осторожно осмотреться', next: 's3' },
+          { text: '🏃 Бежать вперёд', next: 's4' }
+        ]
+      },
+      s2: {
+        text: 'Ты слышишь шаги...',
+        choices: [
+          { text: '⚔️ В бой', next: 'lose' },
+          { text: '🔦 Свет', next: 'win' }
+        ]
+      },
+      s3: {
+        text: 'Ты находишь старый ключ.',
+        choices: [
+          { text: '🔑 Взять', next: 'win' },
+          { text: '🔙 Назад', next: 'start' }
+        ]
+      },
+      s4: {
+        text: 'Выход закрыт...',
+        choices: [{ text: '💀 Конец', next: 'lose' }]
+      },
+      win: {
+        text: '🏆 ПОБЕДА!',
+        choices: [{ text: '📖 Меню', next: 'menu' }]
+      },
+      lose: {
+        text: '💀 ПРОИГРЫШ',
+        choices: [{ text: '📖 Меню', next: 'menu' }]
+      }
+    };
+
+    const node = scenes[state];
+    if (!node) { storyText.textContent = 'Ошибка'; return; }
+
+    if (state === 'win') {
+      winCount++;
+      if (!completedStories.has(story.id)) completedStories.add(story.id);
+      currency += story.reward || 50;
+      showNotification('🏆 +' + (story.reward || 50) + ' 💀', 'win', 3000);
+      container.classList.add('win-border');
+    } else if (state === 'lose') {
+      deathCount++;
+      showNotification(hasImmortality ? '💀 Амулет спас!' : '💀 Проигрыш...', hasImmortality ? 'premium' : 'danger', 2000);
+    } else if (state === 'start') {
+      container.classList.remove('win-border');
     }
 
-    // ============================================================
-    // 9. МЕНЮ 100 ИСТОРИЙ
-    // ============================================================
-    function renderMenu() {
-      const grid = document.getElementById('storyGrid');
-      grid.innerHTML = '';
+    storyText.textContent = node.text;
+    choicesContainer.innerHTML = '';
+    
+    node.choices.forEach(choice => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      if (choice.text.includes('🏆')) btn.classList.add('win-option');
+      if (choice.text.includes('💀')) btn.classList.add('danger-option');
+      btn.textContent = choice.text;
       
-      const categories = {};
-      for (const story of allStories) {
-        if (!categories[story.category]) categories[story.category] = [];
-        categories[story.category].push(story);
-      }
+      btn.addEventListener('click', function() {
+        if (choice.next === 'menu') {
+          goToMainScreen();
+          return;
+        }
+        renderGame(choice.next);
+      });
+      
+      choicesContainer.appendChild(btn);
+    });
 
-      const catOrder = ['classic','psycho','occult','scifi','theater','gothic','deep
+    updateUI();
+  }
+
+  function goToMainScreen() {
+    gameScreen.classList.remove('active');
+    mainScreen.style.display = 'block';
+    updateUI();
+  }
+
+  function openPayment(item) {
+    currentPaymentItem = item;
+    const price = isSaleActive ? (item.salePrice || item.price) : item.price;
+    document.getElementById('paymentItem').innerHTML = `
+      <span class="emoji">${item.emoji || '🪙'}</span>
+      <div class="price">${price} ₽</div>
+      <div style="font-size:0.9rem;">${item.name}</div>
+      ${item.type === 'story' ? '<div style="color:#ffd700;font-size:0.8rem;margin-top:5px;">📖 Премиум-история</div>' : ''}
+    `;
+    document.getElementById('paymentStatus').textContent = 'Заполните данные';
+    document.getElementById('paymentStatus').className = 'payment-status';
+    document.getElementById('cardNumber').value = '4242 4242 4242 4242';
+    document.getElementById('cardExpiry').value = '12/26';
+    document.getElementById('cardCvc').value = '123';
+    document.getElementById('cardName').value = 'ИВАН ИВАНОВ';
+    document.getElementById('payment-overlay').classList.add('show');
+    document.getElementById('paymentSubmit').disabled = false;
+  }
+
+  function closePayment() {
+    document.getElementById('payment-overlay').classList.remove('show');
+    currentPaymentItem = null;
+  }
+
+  function processPayment() {
+    const statusEl = document.getElementById('paymentStatus');
+    statusEl.textContent = '⏳ Обработка...';
+    document.getElementById('paymentSubmit').disabled = true;
+    
+    setTimeout(() => {
+      statusEl.textContent = '✅ УСПЕШНО!';
+      statusEl.className = 'payment-status success';
+      
+      if (currentPaymentItem) {
+        const item = currentPaymentItem;
+        
+        if (item.type === 'story') {
+          purchasedStories.add(item.storyId);
+          showNotification('📖 История "' + item.name + '" открыта!', 'premium', 3000);
+        } else {
+          purchasedItems.add(item.id);
+          
+          switch (item.type) {
+            case 'currency':
+              currency += item.amount;
+              premiumCurrency += Math.floor(item.price / 10);
+              showNotification('💰 +' + item.amount + ' 💀', 'premium', 2000);
+              break;
+            case 'unlock':
+              allStoriesUnlocked = true;
+              showNotification('🔓 ВСЁ ОТКРЫТО!', 'premium', 3000);
+              break;
+            case 'extreme':
+              isPremium = true;
+              showNotification('🎭 ЭКСТРИМ!', 'premium', 3000);
+              break;
+            case 'immortality':
+              hasImmortality = true;
+              showNotification('💀 БЕССМЕРТИЕ!', 'premium', 3000);
+              break;
+            case 'premium':
+              isPremium = true;
+              hasImmortality = true;
+              allStoriesUnlocked = true;
+              currency += 5000;
+              premiumCurrency += 500;
+              showNotification('👑 ПРЕМИУМ!', 'premium', 4000);
+              break;
+          }
+        }
+        
+        if (!localStorage.getItem('h100_first_purchase')) {
+          currency += 50;
+          localStorage.setItem('h100_first_purchase', 'true');
+          showNotification('🎁 БОНУС +50 💀', 'premium', 3000);
+        }
+      }
+      
+      setTimeout(() => { closePayment(); }, 1500);
+      updateUI();
+    }, 1500);
+  }
+
+  function activatePromoCode(code) {
+    const upperCode = code.toUpperCase();
+    if (promoCodesUsed.has(upperCode)) {
+      showNotification('❌ Уже использован!', 'danger', 2000);
+      return false;
+    }
+    const promo = promoCodes[upperCode];
+    if (!promo) {
+      showNotification('❌ Неверный код!', 'danger', 2000);
+      return false;
+    }
+    
+    const r = promo.reward;
+    if (r.type === 'special') {
+      currency += r.currency;
+      premiumCurrency += r.premiumCurrency;
+      allStoriesUnlocked = true;
+      hasImmortality = true;
+      isPremium = true;
+    } else if (r.type === 'currency') {
+      currency += r.currency;
+    } else if (r.type === 'premium') {
+      currency += r.currency;
+      premiumCurrency += r.premiumCurrency;
+      isPremium = true;
+    }
+    
+    promoCodesUsed.add(upperCode);
+    const anim = document.getElementById('promo-animation');
+    anim.classList.add('show');
+    setTimeout(() => anim.classList.remove('show'), 2000);
+    showNotification(r.description, 'special', 4000);
+    updateUI();
+    return true;
+  }
+
+  filterButtons.addEventListener('click', function(e) {
+    if (e.target.tagName === 'BUTTON') {
+      currentFilter = e.target.getAttribute('data-filter');
+      filterButtons.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      renderStories();
+    }
+  });
+
+  document.getElementById('name-submit').addEventListener('click', function() {
+    playerName = document.getElementById('name-input').value.trim() || 'Незнакомец';
+    document.getElementById('name-overlay').style.display = 'none';
+    loadGame();
+    updateUI();
+    document.getElementById('horror-bg').classList.add('active');
+    showNotification('👋 ' + playerName + '!', 'win', 2000);
+  });
+
+  document.getElementById('name-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('name-submit').click();
+  });
+
+  document.getElementById('paymentClose').addEventListener('click', closePayment);
+  document.getElementById('paymentSubmit').addEventListener('click', processPayment);
+  
+  document.getElementById('reset-btn').addEventListener('click', function() { renderGame('start'); });
+  document.getElementById('back-menu-btn').addEventListener('click', goToMainScreen);
+  document.getElementById('gameBackLink').addEventListener('click', goToMainScreen);
+  
+  promoBtn.addEventListener('click', function() {
+    const code = promoInput.value.trim();
+    if (!code) { showNotification('⚠️ Введите код!', 'danger', 2000); return; }
+    if (activatePromoCode(code)) {
+      promoBtn.textContent = '✅';
+      promoBtn.classList.add('used');
+      promoInput.disabled = true;
+    }
+  });
+
+  promoInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') promoBtn.click();
+  });
+
+  loadGame();
+  updateUI();
+  
+  if (playerName) {
+    document.getElementById('name-overlay').style.display = 'none';
+    document.getElementById('horror-bg').classList.add('active');
+  }
+})();
+</script>
+</body>
+</html>
