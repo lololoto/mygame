@@ -2,121 +2,102 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>100 историй страха</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    
-    html, body {
-      height: 100%;
-      width: 100%;
-      overflow-x: hidden;
-    }
-    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: #0a0a0f;
+      min-height: 100vh;
       font-family: 'Courier New', monospace;
-      padding: 0.5rem;
-      -webkit-font-smoothing: antialiased;
-      touch-action: manipulation;
-      overflow-y: auto;
-      font-size: 16px;
+      padding: 1rem;
+      position: relative;
+      overflow-x: hidden;
     }
+    body.flash { background: #ffffff !important; transition: 0s; }
+    body.win { background: #0a1a0a; box-shadow: inset 0 0 100px #00aa0044; }
 
     #horror-bg {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       z-index: 0; pointer-events: none;
       opacity: 0.12;
-      background: 
-        radial-gradient(circle at 20% 30%, #1a0a0a 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, #0a0a1a 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, #0a1a0a 0%, transparent 50%);
+      background-size: cover;
+      background-position: center;
+      transition: all 1s ease;
       filter: blur(2px) brightness(0.4) contrast(1.2);
     }
     #horror-bg.active { opacity: 0.2; filter: blur(3px) brightness(0.3) contrast(1.4); }
+    #horror-bg::after {
+      content: '';
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(ellipse at center, transparent 30%, #000000cc 100%);
+      pointer-events: none;
+    }
 
     #name-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.95);
       display: flex; justify-content: center; align-items: center;
-      z-index: 99999; flex-direction: column; gap: 25px; padding: 20px;
+      z-index: 99999; flex-direction: column; gap: 20px;
     }
-    #name-overlay h2 { 
-      color: #ff4444; font-size: 2.2rem; 
-      text-shadow: 0 0 30px #ff0000; 
-      font-family: 'Courier New', monospace; text-align: center;
-    }
-    #name-overlay input { 
-      padding: 18px 30px; font-size: 1.6rem; 
-      background: #1a1a2e; border: 2px solid #ff444488; 
-      color: #fff; border-radius: 50px; text-align: center; 
-      font-family: 'Courier New', monospace; 
-      width: 300px; max-width: 90vw;
-    }
-    #name-overlay button { 
-      padding: 18px 50px; font-size: 1.4rem; 
-      background: #ff2222; border: none; color: #fff; 
-      border-radius: 50px; cursor: pointer; 
-      font-family: 'Courier New', monospace; 
-      box-shadow: 0 0 30px #ff000066;
-    }
+    #name-overlay h2 { color: #ff4444; font-size: 2rem; text-shadow: 0 0 30px #ff0000; font-family: 'Courier New', monospace; }
+    #name-overlay input { padding: 15px 30px; font-size: 1.5rem; background: #1a1a2e; border: 2px solid #ff444488; color: #fff; border-radius: 50px; text-align: center; font-family: 'Courier New', monospace; width: 300px; }
+    #name-overlay button { padding: 15px 50px; font-size: 1.2rem; background: #ff2222; border: none; color: #fff; border-radius: 50px; cursor: pointer; font-family: 'Courier New', monospace; box-shadow: 0 0 30px #ff000066; transition: 0.3s; }
+    #name-overlay button:hover { transform: scale(1.05); box-shadow: 0 0 60px #ff0000aa; }
 
     #main-screen {
-      width: 100%; max-width: 1200px;
-      margin: 0 auto; position: relative; z-index: 10;
+      max-width: 1200px; width: 100%; margin: 0 auto;
+      position: relative; z-index: 10;
     }
 
     #top-bar {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 20px; background: rgba(15,15,26,0.85);
-      border-radius: 30px; border: 1px solid #2a2a4a;
-      margin-bottom: 12px; flex-wrap: wrap; gap: 10px;
+      padding: 8px 16px; background: rgba(15,15,26,0.85);
+      border-radius: 30px;
+      border: 1px solid #2a2a4a;
+      margin-bottom: 12px;
+      flex-wrap: wrap; gap: 8px;
+      backdrop-filter: blur(10px);
     }
     #currency-display {
-      display: flex; align-items: center; gap: 10px;
-      color: #ffaa44; font-size: 1.2rem;
-      font-family: 'Courier New', monospace; flex-wrap: wrap;
+      display: flex; align-items: center; gap: 8px;
+      color: #ffaa44; font-size: 1rem;
+      font-family: 'Courier New', monospace;
     }
-    #currency-display .amount { font-weight: bold; color: #ffcc66; font-size: 1.3rem; }
-    #currency-display .premium { color: #ffd700; font-size: 1.3rem; }
-    
-    .promo-section {
-      display: flex; gap: 10px; align-items: center; width: 100%;
+    #currency-display .coin { font-size: 1.2rem; }
+    #currency-display .amount { font-weight: bold; color: #ffcc66; }
+    #currency-display .premium { color: #ffd700; font-size: 1.2rem; }
+    #top-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    #top-actions button {
+      background: rgba(22,22,42,0.8); border: 1px solid #2a2a4a;
+      color: #b8bcd0; padding: 4px 14px; border-radius: 20px;
+      cursor: pointer; font-family: 'Courier New', monospace;
+      font-size: 0.7rem; transition: 0.3s;
+      backdrop-filter: blur(5px);
     }
-    #promo-input {
-      background: rgba(22,22,42,0.8); border: 2px solid #2a2a4a;
-      color: #b8bcd0; padding: 12px 18px; border-radius: 25px;
-      font-family: 'Courier New', monospace; font-size: 1rem;
-      flex: 1; min-width: 100px;
-    }
-    #promo-btn {
-      background: #ffd700; border: none; color: #000;
-      padding: 12px 20px; border-radius: 25px; cursor: pointer;
-      font-family: 'Courier New', monospace; font-size: 0.95rem;
-      font-weight: bold; white-space: nowrap;
-    }
-    #promo-btn.used { background: #44aa44; color: #fff; }
+    #top-actions button:hover { border-color: #ff8800; color: #ff8800; }
 
     #stats-bar {
-      display: flex; justify-content: center; gap: 25px;
-      font-size: 0.9rem; color: #4a4a5a;
+      display: flex; justify-content: center; gap: 20px;
+      font-size: 0.6rem; color: #4a4a5a;
       font-family: 'Courier New', monospace; flex-wrap: wrap;
       margin-bottom: 12px;
-      padding: 8px;
-      background: rgba(15,15,26,0.5);
-      border-radius: 20px;
     }
-    #stats-bar .stat { display: flex; align-items: center; gap: 6px; }
-    #stats-bar .stat .num { color: #ff6666; font-weight: bold; font-size: 1rem; }
+    #stats-bar .stat { display: flex; align-items: center; gap: 4px; }
+    #stats-bar .stat .num { color: #ff6666; font-weight: bold; }
     #stats-bar .stat.win-stat .num { color: #44ff44; }
 
     #content-container {
-      display: flex;
+      display: grid;
+      grid-template-columns: 300px 1fr;
       gap: 12px;
-      align-items: flex-start;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      #content-container {
+        grid-template-columns: 1fr;
+      }
     }
 
     #shop-section {
@@ -124,18 +105,15 @@
       border-radius: 20px;
       border: 1px solid #1a1a2e;
       padding: 16px;
-      width: 320px;
-      min-width: 280px;
-      flex-shrink: 0;
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 10px;
     }
     #shop-section .shop-header {
       display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
-    #shop-section .shop-header h3 { 
-      color: #ffd700; font-size: 1.2rem; 
-      font-family: 'Courier New', monospace; 
-    }
+    #shop-section .shop-header h3 { color: #ffd700; font-size: 1rem; font-family: 'Courier New', monospace; letter-spacing: 1px; }
     .shop-grid-main {
       display: flex;
       flex-direction: column;
@@ -145,36 +123,38 @@
       background: rgba(10,10,20,0.6);
       border: 1px solid #1a1a2e;
       border-radius: 14px;
-      padding: 12px;
+      padding: 12px 10px;
+      transition: 0.3s;
       position: relative;
-      display: flex;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
       align-items: center;
-      gap: 12px;
     }
-    .shop-item-main.premium-story-item {
-      border-color: #ffd700;
-      background: rgba(20,15,0,0.4);
-    }
-    .shop-item-main .item-emoji { font-size: 1.8rem; }
-    .shop-item-main .item-info { flex: 1; min-width: 0; }
-    .shop-item-main .item-name { font-size: 0.9rem; color: #b8bcd0; font-weight: bold; }
-    .shop-item-main .item-desc { font-size: 0.75rem; color: #4a4a6a; margin-top: 4px; }
+    .shop-item-main:hover { border-color: #ffd700; transform: scale(1.02); box-shadow: 0 0 30px #ffd70022; }
+    .shop-item-main .item-emoji { font-size: 1.6rem; }
+    .shop-item-main .item-info { min-width: 0; }
+    .shop-item-main .item-name { font-size: 0.7rem; color: #b8bcd0; }
+    .shop-item-main .item-desc { font-size: 0.55rem; color: #4a4a6a; margin-top: 2px; }
     .shop-item-main .item-price-block { text-align: right; }
-    .shop-item-main .item-price { font-size: 1rem; color: #ffd700; font-weight: bold; display: block; }
-    .shop-item-main .item-bonus { font-size: 0.7rem; color: #ffcc66; }
+    .shop-item-main .item-price { font-size: 0.8rem; color: #ffd700; font-weight: bold; display: block; }
+    .shop-item-main .item-bonus { font-size: 0.5rem; color: #ffcc66; }
     .shop-item-main .buy-btn {
       background: #ffd700; border: none; color: #000;
-      padding: 6px 14px; border-radius: 18px;
+      padding: 4px 12px; border-radius: 20px;
       cursor: pointer; font-family: 'Courier New', monospace;
-      font-size: 0.7rem; font-weight: bold;
-      margin-top: 5px; width: 100%;
+      font-size: 0.6rem; font-weight: bold;
+      margin-top: 4px; transition: 0.3s;
+      width: 100%;
     }
-    .shop-item-main .buy-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-    .shop-item-main .buy-btn.owned-btn { background: #44aa44; cursor: default; font-size: 0.8rem; }
+    .shop-item-main .buy-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #ffd70066; }
+    .shop-item-main .buy-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+    .shop-item-main .buy-btn.owned-btn { background: #44aa44; cursor: default; }
     .shop-item-main .discount-badge {
       position: absolute; top: -6px; right: -6px;
-      background: #ff8800; color: #fff; font-size: 0.6rem;
-      padding: 3px 8px; border-radius: 10px; font-weight: bold;
+      background: #ff8800; color: #fff; font-size: 0.4rem;
+      padding: 1px 6px; border-radius: 8px;
+      font-weight: bold;
     }
 
     #stories-section {
@@ -182,45 +162,63 @@
       border-radius: 20px;
       border: 1px solid #1a1a2e;
       padding: 16px;
-      flex: 1;
-      min-width: 0;
+      backdrop-filter: blur(10px);
     }
     #stories-section .stories-header {
       display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 12px; flex-wrap: wrap; gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    #stories-section .stories-header h3 { 
-      color: #6688ff; font-size: 1.2rem; 
-      font-family: 'Courier New', monospace; 
-    }
-    #stories-section .stories-header .count { color: #4a4a6a; font-size: 0.9rem; }
-    
+    #stories-section .stories-header h3 { color: #6688ff; font-size: 1rem; font-family: 'Courier New', monospace; letter-spacing: 1px; }
+    #stories-section .stories-header .count { color: #4a4a6a; font-size: 0.6rem; }
     #filter-buttons {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
-      overflow-x: auto;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
     }
     #filter-buttons button {
-      background: rgba(22,22,42,0.8); border: 2px solid #2a2a4a;
-      color: #4a4a6a; padding: 6px 12px; border-radius: 15px;
-      cursor: pointer; font-family: 'Courier New', monospace;
-      font-size: 0.7rem; white-space: nowrap;
+      background: rgba(22,22,42,0.8);
+      border: 1px solid #2a2a4a;
+      color: #4a4a6a;
+      padding: 2px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 0.5rem;
+      transition: 0.3s;
     }
     #filter-buttons button.active { border-color: #6688ff; color: #6688ff; }
+    #filter-buttons button:hover { border-color: #6688ff; color: #b8bcd0; }
 
     .stories-grid-main {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 8px;
-      max-height: 65vh;
+      max-height: 70vh;
       overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .stories-grid-main::-webkit-scrollbar {
+      width: 5px;
+    }
+    .stories-grid-main::-webkit-scrollbar-track {
+      background: rgba(10,10,20,0.3);
+      border-radius: 10px;
+    }
+    .stories-grid-main::-webkit-scrollbar-thumb {
+      background: #2a2a4a;
+      border-radius: 10px;
     }
 
     .story-card-main {
       background: rgba(10,10,20,0.5);
-      border: 2px solid #1a1a2e;
-      border-radius: 14px;
-      padding: 12px 8px;
+      border: 1px solid #1a1a2e;
+      border-radius: 12px;
+      padding: 10px 8px;
       cursor: pointer;
+      transition: 0.3s;
       text-align: center;
       position: relative;
       min-height: 90px;
@@ -229,222 +227,209 @@
       justify-content: center;
       align-items: center;
     }
-    .story-card-main .emoji { font-size: 1.8rem; display: block; }
-    .story-card-main .title { font-size: 0.7rem; color: #b8bcd0; margin-top: 6px; line-height: 1.3; font-weight: bold; }
-    .story-card-main .status { font-size: 0.6rem; margin-top: 4px; }
+    .story-card-main:hover { border-color: #ff4444; transform: scale(1.04); box-shadow: 0 0 30px #ff000044; }
+    .story-card-main .emoji { font-size: 1.6rem; display: block; }
+    .story-card-main .title { font-size: 0.55rem; color: #b8bcd0; margin-top: 4px; line-height: 1.2; }
+    .story-card-main .cat-name { font-size: 0.4rem; color: #4a4a6a; margin-top: 2px; }
+    .story-card-main .reward { font-size: 0.45rem; color: #ffd700; margin-top: 2px; }
+    .story-card-main .status {
+      font-size: 0.45rem; margin-top: 2px;
+    }
     .story-card-main .status.completed { color: #44ff44; }
     .story-card-main .status.locked { color: #ff4444; }
     .story-card-main .status.available { color: #6688ff; }
-    .story-card-main .status.premium { color: #ffd700; }
-    .story-card-main .cat-tag { position: absolute; top: 4px; left: 6px; font-size: 0.5rem; opacity: 0.3; }
+    .story-card-main .cat-tag { position: absolute; top: 2px; left: 4px; font-size: 0.35rem; opacity: 0.3; }
+
     .story-card-main.locked-card { opacity: 0.4; filter: grayscale(0.8); cursor: not-allowed; }
+    .story-card-main.locked-card:hover { transform: none; box-shadow: none; }
     .story-card-main.completed-card { border-color: #44aa44; }
-    .story-card-main.premium-card { border-color: #ffd700; }
-    .story-card-main.premium-card:hover { box-shadow: 0 0 20px #ffd70033; }
-    .story-card-main .price-tag {
-      position: absolute; top: -4px; right: -4px;
-      background: #ffd700; color: #000;
-      font-size: 0.35rem; padding: 2px 5px;
-      border-radius: 6px; font-weight: bold;
-    }
-
-    @media (max-width: 800px) {
-      #content-container {
-        flex-direction: column;
-      }
-      #shop-section {
-        width: 100%;
-        min-width: auto;
-      }
-      .shop-grid-main {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-      .stories-grid-main {
-        grid-template-columns: repeat(3, 1fr);
-        max-height: 50vh;
-      }
-    }
-
-    @media (max-width: 500px) {
-      .shop-grid-main {
-        grid-template-columns: 1fr;
-      }
-      .stories-grid-main {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .story-card-main {
-        min-height: 80px;
-      }
-    }
+    .story-card-main.completed-card .title::after { content: ' ✓'; color: #44aa44; }
 
     #game-screen {
-      display: none; width: 100%; max-width: 700px; margin: 0 auto;
+      display: none;
+      max-width: 680px; width: 100%; margin: 0 auto;
     }
     #game-screen.active { display: block; }
 
     .game-container {
       background: rgba(15,15,26,0.85);
-      border-radius: 25px; padding: 20px 18px 25px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.9);
-      border: 2px solid #1a1a2e;
+      border-radius: 2.5rem; padding: 1.5rem 1.8rem 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.9), 0 0 0 1px #2a2a3f inset;
+      border: 1px solid #1a1a2e;
+      backdrop-filter: blur(10px);
     }
-    .game-container.win-border { box-shadow: 0 0 60px #00aa0066, 0 20px 40px #000000cc; border-color: #44aa44; }
-    .game-container.premium-border { box-shadow: 0 0 60px #ffd70044, 0 20px 40px #000000cc; border-color: #ffd700; }
+    .game-container.win-border { box-shadow: 0 0 60px #00aa0066, 0 20px 40px #000000cc, 0 0 0 2px #44aa44 inset; }
+    .game-container.premium-border { box-shadow: 0 0 60px #ffd70044, 0 20px 40px #000000cc, 0 0 0 2px #ffd70066 inset; }
 
-    h1 { 
-      font-size: 1.4rem; color: #ccd0e0; text-align: center; 
-      border-bottom: 2px dashed #2a2a3f; padding-bottom: 0.8rem; 
-      margin-bottom: 1rem; font-family: 'Courier New', monospace; 
-    }
-    h1.premium-title { color: #ffd700; text-shadow: 0 0 30px #ffd700; }
+    h1 { font-size: 1.1rem; font-weight: 400; color: #ccd0e0; text-align: center; border-bottom: 1px dashed #2a2a3f; padding-bottom: 0.5rem; margin-bottom: 0.8rem; font-family: 'Courier New', monospace; letter-spacing: 2px; }
+    h1.premium-title { color: #ffd700; text-shadow: 0 0 30px #ffd700, 0 0 60px #ffd70044; }
 
     .scene-box {
       background: rgba(10,10,20,0.8);
-      border-radius: 18px; padding: 20px 16px;
+      border-radius: 1.5rem; padding: 1.5rem 1.2rem;
       box-shadow: inset 0 4px 20px #000000;
       border: 1px solid #1a1a2e;
-      min-height: 180px;
+      min-height: 160px;
+      position: relative;
+      overflow: hidden;
     }
+    .scene-box::before {
+      content: '';
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.1;
+      z-index: 0;
+      filter: blur(2px) brightness(0.3);
+      transition: all 1s;
+    }
+    .scene-box > * { position: relative; z-index: 1; }
 
     #story-text {
-      color: #c8ccdd; font-size: 1.15rem; line-height: 1.9;
+      color: #c8ccdd; font-size: 1.05rem; line-height: 1.8;
       white-space: pre-wrap; word-break: break-word;
-      margin-bottom: 1.5rem; font-family: 'Courier New', monospace;
+      font-weight: 300; text-shadow: 0 1px 3px #000000;
+      margin-bottom: 1.2rem;
+      font-family: 'Courier New', monospace;
     }
+    #story-text.shake { animation: textShake 0.05s infinite alternate; }
+    @keyframes textShake { 0% { transform: translate(-3px, -2px) scale(1.02); } 25% { transform: translate(3px, -1px) scale(0.98); } 50% { transform: translate(-1px, 3px) scale(1.01); } 75% { transform: translate(2px, -3px) scale(0.99); } 100% { transform: translate(-3px, 2px) scale(1.02); } }
 
-    .choices-area { display: flex; flex-direction: column; gap: 0.8rem; }
+    .choices-area { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.3rem; }
     .choice-btn {
-      background: rgba(22,22,42,0.9); border: 2px solid #2a2a4a; 
-      color: #b8bcd0; padding: 14px 18px; border-radius: 30px; 
-      font-size: 1.1rem; text-align: left; cursor: pointer;
-      font-family: 'Courier New', monospace; word-break: break-word;
-      font-weight: bold;
+      background: rgba(22,22,42,0.9); border: 1px solid #2a2a4a; color: #b8bcd0;
+      padding: 0.7rem 1rem; border-radius: 3rem; font-size: 0.9rem;
+      font-weight: 300; text-align: left; cursor: pointer;
+      transition: all 0.15s ease; box-shadow: 0 4px 0 #0a0a12;
+      letter-spacing: 0.3px; line-height: 1.3; font-family: 'Courier New', monospace;
+      backdrop-filter: blur(5px);
     }
-    .choice-btn:active { transform: translateY(2px); }
-    .choice-btn.danger-option { border-color: #aa3333; background: #1a0a0a; color: #ff8888; }
-    .choice-btn.win-option { border-color: #44aa44; background: #0a1a0a; color: #88ff88; }
-    .choice-btn.final-btn { border-color: #aa88ff; background: #1a0a2a; color: #cc88ff; }
+    .choice-btn:hover { background: #22223a; border-color: #4a4a7a; transform: scale(1.01); box-shadow: 0 6px 0 #0a0a12; color: #ffffff; }
+    .choice-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #0a0a12; }
+    .choice-btn.danger-option { border-color: #aa3333; background: #1a0a0a; color: #ff8888; box-shadow: 0 4px 0 #3f1111; }
+    .choice-btn.win-option { border-color: #44aa44; background: #0a1a0a; color: #88ff88; box-shadow: 0 4px 0 #1a3f1a; }
+    .choice-btn.final-btn { border-color: #aa88ff; background: #1a0a2a; color: #cc88ff; box-shadow: 0 4px 0 #3f1a5f; }
 
-    .reset-area { margin-top: 1.5rem; display: flex; justify-content: center; gap: 12px; }
+    .reset-area { margin-top: 1.2rem; display: flex; justify-content: center; gap: 0.8rem; flex-wrap: wrap; }
     #reset-btn, #back-menu-btn {
-      background: rgba(22,22,42,0.9); border: 2px solid #2a2a4a; 
-      color: #b8bcd0; padding: 12px 25px; border-radius: 30px; 
-      font-size: 1rem; cursor: pointer; font-family: 'Courier New', monospace;
-      font-weight: bold;
+      background: rgba(22,22,42,0.9); border: 1px solid #2a2a4a; color: #b8bcd0;
+      padding: 0.5rem 1.5rem; border-radius: 4rem; font-size: 0.8rem;
+      font-weight: 300; cursor: pointer; transition: 0.15s;
+      box-shadow: 0 4px 0 #0a0a12; letter-spacing: 1px;
+      font-family: 'Courier New', monospace;
+      backdrop-filter: blur(5px);
     }
+    #reset-btn:hover, #back-menu-btn:hover { background: #22223a; color: #fff; border-color: #4a4a7a; }
+    #reset-btn:active, #back-menu-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #0a0a12; }
 
     #game-indicator {
-      text-align: center; font-size: 0.8rem; color: #4a4a6a;
-      margin-bottom: 0.8rem; font-family: 'Courier New', monospace;
+      text-align: center; font-size: 0.6rem; color: #4a4a6a;
+      margin-bottom: 0.6rem; letter-spacing: 2px;
+      font-family: 'Courier New', monospace;
     }
-    #game-indicator .highlight { color: #ff6666; font-size: 0.9rem; }
-    #game-indicator .back-link { color: #6688ff; cursor: pointer; margin-left: 12px; font-size: 0.9rem; }
+    #game-indicator .highlight { color: #ff6666; }
+    #game-indicator .back-link { color: #6688ff; cursor: pointer; margin-left: 10px; }
+    #game-indicator .back-link:hover { text-decoration: underline; }
 
     #notification {
-      position: fixed; top: 15%; left: 50%; transform: translateX(-50%);
+      position: fixed; top: 20%; left: 50%; transform: translateX(-50%);
       background: #1a0a0a; border: 2px solid #ff444488;
-      padding: 18px 30px; border-radius: 20px;
+      padding: 15px 30px; border-radius: 16px;
       color: #ff8888; font-family: 'Courier New', monospace;
-      font-size: 1.2rem; z-index: 99999;
+      font-size: 1.1rem; z-index: 99999;
       opacity: 0; transition: all 0.5s;
-      pointer-events: none; text-align: center; max-width: 90%;
-      font-weight: bold;
+      pointer-events: none; text-align: center;
+      max-width: 90%;
+      box-shadow: 0 0 60px #ff000044;
     }
-    #notification.active { opacity: 1; top: 20%; }
-    #notification.win { border-color: #44aa44; color: #88ff88; }
-    #notification.premium { border-color: #ffd700; color: #ffd700; }
-    #notification.special { border-color: #ff00ff; color: #ff88ff; }
+    #notification.active { opacity: 1; top: 25%; }
+    #notification.win { border-color: #44aa44; color: #88ff88; box-shadow: 0 0 60px #00aa0044; }
+    #notification.premium { border-color: #ffd700; color: #ffd700; box-shadow: 0 0 60px #ffd70044; }
 
-    #promo-animation {
+    #noise-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: 99990;
-      display: none; justify-content: center; align-items: center;
+      pointer-events: none; z-index: 9998; opacity: 0; transition: opacity 0.1s;
+      background: repeating-conic-gradient(#000 0% 25%, #fff 0% 50%) 0 0 / 3px 3px;
+      mix-blend-mode: overlay;
     }
-    #promo-animation.show { display: flex; animation: promoFade 2s ease-in-out; }
-    #promo-animation .promo-text {
-      font-size: 3.5rem; color: #ffd700;
-      text-shadow: 0 0 40px #ffd700, 0 0 80px #ff8800;
-      font-family: 'Courier New', monospace; font-weight: bold;
-    }
-    @keyframes promoFade {
-      0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; }
-    }
+    #noise-overlay.active { opacity: 0.15; animation: noiseAnim 0.02s infinite; }
+    @keyframes noiseAnim { 0% { background-position: 0 0; } 100% { background-position: 20px 40px; } }
 
     #payment-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.95);
       display: none; justify-content: center; align-items: center;
-      z-index: 99996; padding: 20px;
+      z-index: 99996; flex-direction: column; padding: 20px;
     }
-    #payment-overlay.show { display: flex; }
+    #payment-overlay.active { display: flex; }
     .payment-box {
       background: #16162a; border: 2px solid #ffd700;
-      border-radius: 25px; padding: 30px; width: 100%; max-width: 450px;
+      border-radius: 24px; padding: 30px 40px;
+      max-width: 450px; width: 100%;
+      box-shadow: 0 0 80px #ffd70022;
       position: relative;
     }
-    .payment-box .payment-close { 
-      position: absolute; top: 12px; right: 18px; background: none; 
-      border: none; color: #4a4a6a; font-size: 2rem; cursor: pointer; 
-    }
-    .payment-box h3 { 
-      color: #ffd700; font-size: 1.5rem; text-align: center; 
-      margin-bottom: 25px; font-family: 'Courier New', monospace; 
-    }
-    .payment-box .payment-item { text-align: center; color: #b8bcd0; font-size: 1.1rem; margin-bottom: 20px; }
-    .payment-box .payment-item .emoji { font-size: 2.5rem; display: block; }
-    .payment-box .payment-item .price { color: #ffd700; font-size: 1.6rem; }
-    .payment-box .payment-form { display: flex; flex-direction: column; gap: 15px; }
-    .payment-box .payment-form label { color: #4a4a6a; font-size: 0.9rem; font-weight: bold; }
-    .payment-box .payment-form input { 
-      background: #0a0a14; border: 2px solid #2a2a4a; border-radius: 12px; 
-      padding: 14px 18px; color: #fff; font-family: 'Courier New', monospace; 
-      font-size: 1.1rem; width: 100%;
-    }
-    .payment-box .payment-form .row { display: flex; gap: 12px; }
+    .payment-box .payment-close { position: absolute; top: 10px; right: 20px; background: none; border: none; color: #4a4a6a; font-size: 1.5rem; cursor: pointer; font-family: 'Courier New', monospace; }
+    .payment-box .payment-close:hover { color: #ff4444; }
+    .payment-box h3 { color: #ffd700; font-size: 1.3rem; text-align: center; margin-bottom: 20px; font-family: 'Courier New', monospace; }
+    .payment-box .payment-item { text-align: center; color: #b8bcd0; font-size: 0.9rem; margin-bottom: 15px; }
+    .payment-box .payment-item .emoji { font-size: 2rem; display: block; }
+    .payment-box .payment-item .price { color: #ffd700; font-size: 1.3rem; }
+    .payment-box .payment-form { display: flex; flex-direction: column; gap: 12px; }
+    .payment-box .payment-form label { color: #4a4a6a; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+    .payment-box .payment-form input { background: #0a0a14; border: 1px solid #2a2a4a; border-radius: 10px; padding: 10px 15px; color: #fff; font-family: 'Courier New', monospace; font-size: 0.9rem; width: 100%; }
+    .payment-box .payment-form input:focus { border-color: #ffd700; outline: none; }
+    .payment-box .payment-form .row { display: flex; gap: 10px; }
     .payment-box .payment-form .row > * { flex: 1; }
-    .payment-box .payment-submit { 
-      background: #ffd700; border: none; padding: 16px; border-radius: 15px; 
-      color: #000; font-weight: bold; font-size: 1.2rem; cursor: pointer; 
-      font-family: 'Courier New', monospace; margin-top: 15px;
-    }
+    .payment-box .payment-submit { background: #ffd700; border: none; padding: 14px; border-radius: 12px; color: #000; font-weight: bold; font-size: 1.1rem; cursor: pointer; font-family: 'Courier New', monospace; margin-top: 10px; transition: 0.3s; }
+    .payment-box .payment-submit:hover { transform: scale(1.02); box-shadow: 0 0 40px #ffd70066; }
     .payment-box .payment-submit:disabled { opacity: 0.3; cursor: not-allowed; }
-    .payment-box .payment-note { 
-      text-align: center; color: #4a4a6a; font-size: 0.8rem; 
-      margin-top: 20px; padding-top: 20px; border-top: 1px solid #1a1a2a; 
-    }
-    .payment-box .payment-status { 
-      text-align: center; font-size: 1rem; min-height: 30px; 
-      color: #ffaa44; margin-top: 8px; font-weight: bold;
-    }
+    .payment-box .payment-note { text-align: center; color: #4a4a6a; font-size: 0.6rem; margin-top: 15px; padding-top: 15px; border-top: 1px solid #1a1a2a; }
+    .payment-box .payment-note .test-mode { color: #ff8844; font-weight: bold; }
+    .payment-box .payment-status { text-align: center; font-size: 0.8rem; min-height: 25px; color: #ffaa44; margin-top: 5px; }
     .payment-box .payment-status.success { color: #44ff44; }
     .payment-box .payment-status.error { color: #ff4444; }
+
+    @media (max-width: 480px) {
+      #top-bar { padding: 6px 12px; }
+      #currency-display { font-size: 0.8rem; }
+      #shop-section { padding: 12px; }
+      .shop-item-main { padding: 8px 6px; }
+      .shop-item-main .item-emoji { font-size: 1.2rem; }
+      .game-container { padding: 1rem 0.8rem; }
+      #story-text { font-size: 0.9rem; }
+      .choice-btn { font-size: 0.8rem; padding: 0.5rem 0.8rem; }
+      .stories-grid-main {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+    }
   </style>
 </head>
 <body>
 
+<!-- СТРАШНЫЙ ФОН -->
 <div id="horror-bg"></div>
-<div id="notification"></div>
-<div id="promo-animation"><div class="promo-text">131984</div></div>
 
+<!-- НОТИФИКАЦИЯ -->
+<div id="notification"></div>
+
+<!-- ИМЯ -->
 <div id="name-overlay">
   <h2>👁️ КТО ТЫ?</h2>
-  <input type="text" id="name-input" placeholder="Введите имя..." maxlength="20" autocomplete="off">
+  <input type="text" id="name-input" placeholder="Введите имя..." maxlength="20" autofocus>
   <button id="name-submit">ВОЙТИ В СТРАХ</button>
 </div>
 
+<!-- ГЛАВНЫЙ ЭКРАН -->
 <div id="main-screen">
   <div id="top-bar">
     <div id="currency-display">
-      <span>💀</span>
+      <span class="coin">💀</span>
       <span class="amount" id="mainCurrency">0</span>
-      <span class="premium">👑</span>
+      <span style="margin-left:10px;" class="premium">👑</span>
       <span class="amount" id="mainPremium">0</span>
     </div>
-    <div class="promo-section">
-      <input type="text" id="promo-input" placeholder="Промокод" maxlength="20" autocomplete="off">
-      <button id="promo-btn">🎫 АКТИВИРОВАТЬ</button>
+    <div id="top-actions">
     </div>
   </div>
 
@@ -455,14 +440,16 @@
   </div>
 
   <div id="content-container">
+    <!-- МАГАЗИН СЛЕВА -->
     <div id="shop-section">
       <div class="shop-header">
         <h3>🛒 МАГАЗИН</h3>
-        <span style="color:#ff8800;font-size:0.8rem;">🔥 СКИДКИ</span>
+        <span style="color:#ff8800;font-size:0.55rem;">🔥 СКИДКИ</span>
       </div>
       <div class="shop-grid-main" id="mainShopGrid"></div>
     </div>
 
+    <!-- ВСЕ 100 ИСТОРИЙ СПРАВА -->
     <div id="stories-section">
       <div class="stories-header">
         <h3>📖 ВСЕ ИСТОРИИ</h3>
@@ -480,13 +467,13 @@
         <button data-filter="travel">🚂 Поездки</button>
         <button data-filter="mystic">🔮 Мистика</button>
         <button data-filter="special">🎮 Специальные</button>
-        <button data-filter="premium" style="border-color:#ffd700;color:#ffd700;">👑 Premium</button>
       </div>
       <div class="stories-grid-main" id="mainStoriesGrid"></div>
     </div>
   </div>
 </div>
 
+<!-- ИГРОВОЙ ЭКРАН -->
 <div id="game-screen">
   <div class="game-container" id="gameContainer">
     <div id="game-indicator">
@@ -494,7 +481,7 @@
       <span class="back-link" id="gameBackLink">← НА ГЛАВНУЮ</span>
     </div>
     <h1 id="gameTitle">🌲 ТЁМНЫЙ ЛЕС</h1>
-    <div class="scene-box">
+    <div class="scene-box" id="sceneBox">
       <div id="story-text">Загрузка...</div>
       <div id="choices-container" class="choices-area"></div>
     </div>
@@ -505,6 +492,7 @@
   </div>
 </div>
 
+<!-- ПЛАТЁЖНОЕ ОКНО -->
 <div id="payment-overlay">
   <div class="payment-box">
     <button class="payment-close" id="paymentClose">✕</button>
@@ -512,611 +500,753 @@
     <div class="payment-item" id="paymentItem">
       <span class="emoji">🪙</span>
       <div class="price">99 ₽</div>
-      <div style="font-size:0.9rem;">100 Осколков страха</div>
+      <div style="font-size:0.7rem;opacity:0.5;">100 Осколков страха</div>
     </div>
     <div class="payment-form">
-      <label>Номер карты</label>
-      <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19" inputmode="numeric">
+      <label>Номер карты (тестовый: 4242 4242 4242 4242)</label>
+      <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19">
       <div class="row">
         <div>
-          <label>Срок</label>
-          <input type="text" id="cardExpiry" placeholder="12/26" maxlength="5" inputmode="numeric">
+          <label>Срок (ММ/ГГ)</label>
+          <input type="text" id="cardExpiry" placeholder="12/26" maxlength="5">
         </div>
         <div>
           <label>CVC</label>
-          <input type="text" id="cardCvc" placeholder="123" maxlength="4" inputmode="numeric">
+          <input type="text" id="cardCvc" placeholder="123" maxlength="4">
         </div>
       </div>
-      <label>Имя</label>
+      <label>Имя владельца</label>
       <input type="text" id="cardName" placeholder="ИВАН ИВАНОВ">
       <button class="payment-submit" id="paymentSubmit">💳 ОПЛАТИТЬ</button>
-      <div class="payment-status" id="paymentStatus">Заполните данные</div>
+      <div class="payment-status" id="paymentStatus">Заполните данные для оплаты</div>
       <div class="payment-note">
-        <span style="color:#ff8844;font-weight:bold;">🔬 ТЕСТОВЫЙ ОФЛАЙН-РЕЖИМ</span>
+        <span class="test-mode">🔬 ТЕСТОВЫЙ РЕЖИМ</span><br>
+        Деньги не списываются. Любые данные принимаются.
       </div>
     </div>
   </div>
 </div>
 
+<!-- ОВЕРЛЕИ -->
+<div id="noise-overlay"></div>
+
 <script>
-(function() {
-  let playerName = '';
-  let currentStoryId = 'story_0';
-  let currency = 0;
-  let premiumCurrency = 0;
-  let completedStories = new Set();
-  let deathCount = 0;
-  let winCount = 0;
-  let isPremium = false;
-  let hasImmortality = false;
-  let allStoriesUnlocked = false;
-  let isSaleActive = true;
-  let currentFilter = 'all';
-  let purchasedItems = new Set();
-  let purchasedStories = new Set();
-  let promoCodesUsed = new Set();
-  let currentPaymentItem = null;
-
-  function generate100Stories() {
-    const stories = [];
-    const categories = [
-      { id: 'classic', emoji: '🏚️', name: 'Классический' },
-      { id: 'psycho', emoji: '🧠', name: 'Психологический' },
-      { id: 'occult', emoji: '🕯️', name: 'Оккультный' },
-      { id: 'scifi', emoji: '🚀', name: 'Фантастика' },
-      { id: 'theater', emoji: '🎭', name: 'Театральный' },
-      { id: 'gothic', emoji: '🏰', name: 'Готический' },
-      { id: 'deep', emoji: '🌊', name: 'Глубины' },
-      { id: 'travel', emoji: '🚂', name: 'Путешествия' },
-      { id: 'mystic', emoji: '🔮', name: 'Мистический' },
-      { id: 'special', emoji: '🎮', name: 'Специальные' }
-    ];
+  (function() {
+    // ============================================================
+    // 0. ОСНОВНЫЕ ПАРАМЕТРЫ
+    // ============================================================
+    let playerName = '';
+    let currentStoryId = 'story_0';
+    let currency = 0;
+    let premiumCurrency = 0;
+    let completedStories = new Set();
+    let deathCount = 0;
+    let winCount = 0;
+    let isPremium = false;
+    let hasImmortality = false;
+    let allStoriesUnlocked = false;
+    let isSaleActive = true;
+    let currentState = 'start';
+    let isGameOver = false;
+    let isWin = false;
+    let currentFilter = 'all';
     
-    const titles = [
-      'Тёмный лес', 'Заброшенный дом', 'Кладбище', 'Склеп', 'Подземелье',
-      'Больница', 'Санаторий', 'Зеркальная комната', 'Театр марионеток',
-      'Космический корабль', 'Подводная станция', 'Лаборатория',
-      'Театр', 'Опера', 'Маскарад', 'Особняк', 'Замок',
-      'Глубина', 'Кракен', 'Батискаф', 'Поезд', 'Самолёт', 'Корабль',
-      'Комната предсказаний', 'Магия', 'Проклятие', 'Комната 131984'
+    let purchasedItems = new Set();
+
+    // ============================================================
+    // 1. ГЕНЕРАЦИЯ 100 ИСТОРИЙ
+    // ============================================================
+    function generate100Stories() {
+      const stories = [];
+      const categories = [
+        { id: 'classic', emoji: '🏚️', name: 'Классический' },
+        { id: 'psycho', emoji: '🧠', name: 'Психологический' },
+        { id: 'occult', emoji: '🕯️', name: 'Оккультный' },
+        { id: 'scifi', emoji: '🚀', name: 'Фантастика' },
+        { id: 'theater', emoji: '🎭', name: 'Театральный' },
+        { id: 'gothic', emoji: '🏰', name: 'Готический' },
+        { id: 'deep', emoji: '🌊', name: 'Глубины' },
+        { id: 'travel', emoji: '🚂', name: 'Путешествия' },
+        { id: 'mystic', emoji: '🔮', name: 'Мистический' },
+        { id: 'special', emoji: '🎮', name: 'Специальные' }
+      ];
+      
+      const titles = [
+        'Тёмный лес', 'Заброшенный дом', 'Кладбище', 'Склеп', 'Подземелье',
+        'Больница', 'Санаторий', 'Зеркальная комната', 'Театр марионеток',
+        'Космический корабль', 'Подводная станция', 'Лаборатория',
+        'Театр', 'Опера', 'Маскарад', 'Особняк', 'Замок',
+        'Глубина', 'Кракен', 'Батискаф', 'Поезд', 'Самолёт', 'Корабль',
+        'Комната предсказаний', 'Магия', 'Проклятие', 'Комната 131984'
+      ];
+      
+      let id = 0;
+      for (const cat of categories) {
+        for (let i = 0; i < 10; i++) {
+          const title = titles[(id + i) % titles.length];
+          const emojis = ['🌲','🏚️','🪦','🕯️','🔮','🏥','🎭','🚀','🌊','🚂','🏰','👻','🪓','🗡️','📖','💀','🦇','🌙','🌀','⚰️'];
+          const emoji = emojis[(id + i) % emojis.length];
+          const difficulty = ['easy','medium','medium','hard','hard','extreme'][Math.floor(Math.random() * 6)];
+          const reward = [40,45,50,55,60,65,70,80,90,100][Math.floor(Math.random() * 10)];
+          const scenes = [6,7,8,8,9,10][Math.floor(Math.random() * 6)];
+          stories.push({
+            id: 'story_' + id,
+            category: cat.id,
+            categoryName: cat.name,
+            categoryEmoji: cat.emoji,
+            emoji: emoji,
+            title: title + (i > 0 ? ' ' + (i + 1) : ''),
+            desc: 'Страшная история #' + (id + 1),
+            difficulty: difficulty,
+            reward: reward,
+            scenes: scenes,
+            endings: [5,6,7][Math.floor(Math.random() * 3)],
+            // ИСПРАВЛЕНИЕ: теперь блокируем последние 10 историй
+            locked: (id >= 90) ? true : false,
+            index: id
+          });
+          id++;
+        }
+      }
+      return stories;
+    }
+
+    const allStories = generate100Stories();
+
+    // ============================================================
+    // 2. МАГАЗИН
+    // ============================================================
+    const shopItems = [
+      { id: 'currency_100', name: '100 💀', desc: 'Базовый набор', price: 99, salePrice: 99, emoji: '🪙', type: 'currency', amount: 100, discount: 0 },
+      { id: 'currency_300', name: '300 💀', desc: '+10% бонус', price: 249, salePrice: 211, emoji: '🪙', type: 'currency', amount: 330, discount: 15, popular: true },
+      { id: 'currency_500', name: '500 💀', desc: '+20% бонус', price: 399, salePrice: 319, emoji: '🪙', type: 'currency', amount: 600, discount: 20 },
+      { id: 'currency_1000', name: '1000 💀', desc: '+30% бонус', price: 699, salePrice: 524, emoji: '🪙', type: 'currency', amount: 1300, discount: 25 },
+      { id: 'currency_2500', name: '2500 💀', desc: '+40% бонус', price: 1499, salePrice: 1049, emoji: '🪙', type: 'currency', amount: 3500, discount: 30 },
+      { id: 'currency_5000', name: '5000 💀', desc: '+50% бонус 🔥', price: 2499, salePrice: 1499, emoji: '🪙', type: 'currency', amount: 7500, discount: 40, bestValue: true },
+      { id: 'unlock_all', name: '🔓 Все истории', desc: 'Открывает все 100 историй', price: 499, salePrice: 399, emoji: '🔑', type: 'unlock', discount: 20 },
+      { id: 'extreme_mode', name: '🎭 Экстрим', desc: 'Удваивает сложность', price: 299, salePrice: 239, emoji: '🎭', type: 'extreme', discount: 20 },
+      { id: 'immortality', name: '💀 Бессмертие', desc: 'Бесконечные жизни', price: 999, salePrice: 799, emoji: '💀', type: 'immortality', discount: 20 },
+      { id: 'premium_pass', name: '👑 Премиум', desc: 'ВСЁ СРАЗУ', price: 1999, salePrice: 1499, emoji: '👑', type: 'premium', discount: 25, bestValue: true }
     ];
 
-    // Список премиум-историй (ID)
-    const premiumStoryIds = [
-      'story_7', 'story_13', 'story_21', 'story_28', 'story_35',
-      'story_42', 'story_49', 'story_56', 'story_63', 'story_70',
-      'story_77', 'story_84', 'story_91', 'story_95', 'story_99'
-    ];
+    // ============================================================
+    // 3. UI ЭЛЕМЕНТЫ
+    // ============================================================
+    const mainScreen = document.getElementById('main-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const mainCurrency = document.getElementById('mainCurrency');
+    const mainPremium = document.getElementById('mainPremium');
+    const mainDeaths = document.getElementById('mainDeaths');
+    const mainWins = document.getElementById('mainWins');
+    const mainCompleted = document.getElementById('mainCompleted');
+    const mainStoryCount = document.getElementById('mainStoryCount');
+    const mainShopGrid = document.getElementById('mainShopGrid');
+    const mainStoriesGrid = document.getElementById('mainStoriesGrid');
+    const filterButtons = document.getElementById('filter-buttons');
 
-    // Цены на премиум-истории
-    const premiumPrices = [99, 149, 199, 249, 299, 349, 399, 449, 499, 599, 699, 799, 899, 999, 1299];
-    
-    let id = 0;
-    let premiumIndex = 0;
-    for (const cat of categories) {
-      for (let i = 0; i < 10; i++) {
-        const storyId = 'story_' + id;
-        const emojis = ['🌲','🏚️','🪦','🕯️','🔮','🏥','🎭','🚀','🌊','🚂','🏰','👻','🪓','🗡️','📖','💀','🦇','🌙','🌀','⚰️'];
-        const isPremium = premiumStoryIds.includes(storyId);
+    const gameStoryName = document.getElementById('gameStoryName');
+    const gameTitle = document.getElementById('gameTitle');
+    const storyText = document.getElementById('story-text');
+    const choicesContainer = document.getElementById('choices-container');
+    const container = document.getElementById('gameContainer');
+    const notification = document.getElementById('notification');
+
+    const resetBtn = document.getElementById('reset-btn');
+    const backMenuBtn = document.getElementById('back-menu-btn');
+    const gameBackLink = document.getElementById('gameBackLink');
+
+    // ============================================================
+    // 4. СОХРАНЕНИЕ
+    // ============================================================
+    function saveGame() {
+      try {
+        const saveData = {
+          currency: currency,
+          premiumCurrency: premiumCurrency,
+          completedStories: [...completedStories],
+          deathCount: deathCount,
+          winCount: winCount,
+          playerName: playerName,
+          premiumStatus: { isPremium, hasImmortality, allStoriesUnlocked },
+          purchasedItems: [...purchasedItems]
+        };
+        localStorage.setItem('h100_save', JSON.stringify(saveData));
+      } catch(e) {
+        console.error('Ошибка сохранения:', e);
+      }
+    }
+
+    function loadGame() {
+      try {
+        const saveData = localStorage.getItem('h100_save');
+        if (saveData) {
+          const parsed = JSON.parse(saveData);
+          currency = parsed.currency || 0;
+          premiumCurrency = parsed.premiumCurrency || 0;
+          completedStories = new Set(parsed.completedStories || []);
+          deathCount = parsed.deathCount || 0;
+          winCount = parsed.winCount || 0;
+          playerName = parsed.playerName || '';
+          
+          if (parsed.premiumStatus) {
+            isPremium = parsed.premiumStatus.isPremium || false;
+            hasImmortality = parsed.premiumStatus.hasImmortality || false;
+            allStoriesUnlocked = parsed.premiumStatus.allStoriesUnlocked || false;
+          }
+          
+          purchasedItems = new Set(parsed.purchasedItems || []);
+        }
+      } catch(e) {
+        console.error('Ошибка загрузки:', e);
+      }
+    }
+
+    // ============================================================
+    // 5. ОБНОВЛЕНИЕ UI
+    // ============================================================
+    function updateUI() {
+      mainCurrency.textContent = currency;
+      mainPremium.textContent = premiumCurrency;
+      mainDeaths.textContent = deathCount;
+      mainWins.textContent = winCount;
+      mainCompleted.textContent = completedStories.size;
+      mainStoryCount.textContent = completedStories.size + ' из 100';
+      
+      if (isPremium) {
+        container.classList.add('premium-border');
+        document.getElementById('gameTitle').classList.add('premium-title');
+      } else {
+        container.classList.remove('premium-border');
+        document.getElementById('gameTitle').classList.remove('premium-title');
+      }
+      
+      renderMainShop();
+      renderAllStories();
+      saveGame();
+    }
+
+    function showNotification(text, type = 'danger', duration = 2500) {
+      notification.textContent = text;
+      notification.className = 'active ' + type;
+      clearTimeout(notification._timeout);
+      notification._timeout = setTimeout(() => {
+        notification.className = '';
+      }, duration);
+    }
+
+    // ============================================================
+    // 6. МАГАЗИН
+    // ============================================================
+    function isItemPurchased(item) {
+      return purchasedItems.has(item.id);
+    }
+
+    function isItemActive(item) {
+      switch (item.type) {
+        case 'unlock':
+          return allStoriesUnlocked;
+        case 'extreme':
+          return isPremium;
+        case 'immortality':
+          return hasImmortality;
+        case 'premium':
+          return isPremium;
+        default:
+          return false;
+      }
+    }
+
+    function renderMainShop() {
+      mainShopGrid.innerHTML = '';
+      
+      for (const item of shopItems) {
+        const div = document.createElement('div');
+        div.className = 'shop-item-main';
         
-        stories.push({
-          id: storyId,
-          category: cat.id,
-          categoryName: cat.name,
-          categoryEmoji: cat.emoji,
-          emoji: emojis[(id + i) % emojis.length],
-          title: titles[(id + i) % titles.length] + (i > 0 ? ' ' + (i + 1) : ''),
-          reward: [40,45,50,55,60,65,70,80,90,100][Math.floor(Math.random() * 10)],
-          locked: (cat.id === 'special' && id < 90) ? true : false,
-          isPremium: isPremium,
-          premiumPrice: isPremium ? premiumPrices[premiumIndex % premiumPrices.length] : 0,
-          index: id
+        const currentPrice = isSaleActive ? item.salePrice : item.price;
+        const hasDiscount = isSaleActive && item.discount > 0;
+        const formattedPrice = currentPrice.toLocaleString('ru-RU');
+        const oldFormattedPrice = item.price.toLocaleString('ru-RU');
+        
+        let statusText = 'КУПИТЬ';
+        let disabled = false;
+        let ownedClass = '';
+        
+        if (item.type === 'currency') {
+          if (isItemPurchased(item)) {
+            statusText = 'ЕЩЁ';
+          }
+        } else if (isItemActive(item)) {
+          statusText = '✅';
+          disabled = true;
+          ownedClass = 'owned-btn';
+        }
+        
+        div.innerHTML = `
+          ${hasDiscount ? `<span class="discount-badge">-${item.discount}%</span>` : ''}
+          <span class="item-emoji">${item.emoji}</span>
+          <div class="item-info">
+            <div class="item-name">${item.name}</div>
+            <div class="item-desc">${item.desc}</div>
+          </div>
+          <div class="item-price-block">
+            <span class="item-price">
+              ${hasDiscount ? `<span style="font-size:0.6rem;color:#ff4444;text-decoration:line-through;margin-right:4px;">${oldFormattedPrice}₽</span>` : ''}
+              ${formattedPrice}₽
+            </span>
+            ${item.type === 'currency' ? `<span class="item-bonus">+${item.amount} 💀</span>` : ''}
+            <button class="buy-btn ${ownedClass}" ${disabled ? 'disabled' : ''}>
+              ${statusText}
+            </button>
+          </div>
+        `;
+        
+        const btn = div.querySelector('.buy-btn');
+        if (!disabled) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openPayment(item);
+          });
+        }
+        
+        mainShopGrid.appendChild(div);
+      }
+    }
+
+    // ============================================================
+    // 7. ВСЕ 100 ИСТОРИЙ
+    // ============================================================
+    function renderAllStories() {
+      mainStoriesGrid.innerHTML = '';
+      
+      let filteredStories = allStories;
+      if (currentFilter !== 'all') {
+        filteredStories = allStories.filter(s => s.category === currentFilter);
+      }
+      
+      for (const story of filteredStories) {
+        const card = document.createElement('div');
+        card.className = 'story-card-main';
+        
+        const isCompleted = completedStories.has(story.id);
+        const isLocked = story.locked && !isCompleted && !allStoriesUnlocked;
+        
+        if (isCompleted) card.classList.add('completed-card');
+        if (isLocked) card.classList.add('locked-card');
+        
+        let statusText = '';
+        if (isCompleted) statusText = '✅ Пройдено';
+        else if (isLocked) statusText = '🔒 Закрыто';
+        else statusText = '▶️ Играть';
+        
+        card.innerHTML = `
+          <span class="cat-tag">${story.categoryEmoji}</span>
+          <span class="emoji">${story.emoji}</span>
+          <div class="title">${story.title}</div>
+          <div class="cat-name">${story.categoryName}</div>
+          <div class="reward">💰 ${story.reward}</div>
+          <div class="status ${isCompleted ? 'completed' : isLocked ? 'locked' : 'available'}">${statusText}</div>
+        `;
+        
+        card.addEventListener('click', function() {
+          if (isLocked) {
+            showNotification('🔒 История заблокирована! Купите доступ в магазине.', 'danger', 2000);
+            return;
+          }
+          startStory(story.id);
         });
         
-        if (isPremium) premiumIndex++;
-        id++;
+        mainStoriesGrid.appendChild(card);
       }
     }
-    return stories;
-  }
 
-  const allStories = generate100Stories();
+    // ============================================================
+    // 8. ЗАПУСК ИСТОРИИ
+    // ============================================================
+    function startStory(storyId) {
+      currentStoryId = storyId;
+      const story = allStories.find(s => s.id === storyId);
+      if (!story) {
+        showNotification('❌ История не найдена!', 'danger', 2000);
+        return;
+      }
+      
+      mainScreen.style.display = 'none';
+      gameScreen.classList.add('active');
+      
+      gameStoryName.textContent = `${story.emoji} ${story.title}`;
+      gameTitle.textContent = `${story.emoji} ${story.title}`;
+      
+      isGameOver = false;
+      isWin = false;
+      currentState = 'start';
+      
+      renderGameState('start');
+      updateUI();
+    }
 
-  const shopItems = [
-    { id: 'currency_100', name: '100 💀', desc: 'Базовый набор', price: 99, salePrice: 99, emoji: '🪙', type: 'currency', amount: 100, discount: 0 },
-    { id: 'currency_300', name: '300 💀', desc: '+10% бонус', price: 249, salePrice: 211, emoji: '🪙', type: 'currency', amount: 330, discount: 15 },
-    { id: 'currency_500', name: '500 💀', desc: '+20% бонус', price: 399, salePrice: 319, emoji: '🪙', type: 'currency', amount: 600, discount: 20 },
-    { id: 'currency_1000', name: '1000 💀', desc: '+30% бонус', price: 699, salePrice: 524, emoji: '🪙', type: 'currency', amount: 1300, discount: 25 },
-    { id: 'currency_2500', name: '2500 💀', desc: '+40% бонус', price: 1499, salePrice: 1049, emoji: '🪙', type: 'currency', amount: 3500, discount: 30 },
-    { id: 'currency_5000', name: '5000 💀', desc: '+50% бонус', price: 2499, salePrice: 1499, emoji: '🪙', type: 'currency', amount: 7500, discount: 40 },
-    { id: 'unlock_all', name: '🔓 Все истории', desc: 'Открывает все', price: 499, salePrice: 399, emoji: '🔑', type: 'unlock', discount: 20 },
-    { id: 'extreme_mode', name: '🎭 Экстрим', desc: 'Сложный режим', price: 299, salePrice: 239, emoji: '🎭', type: 'extreme', discount: 20 },
-    { id: 'immortality', name: '💀 Бессмертие', desc: 'Беск. жизни', price: 999, salePrice: 799, emoji: '💀', type: 'immortality', discount: 20 },
-    { id: 'premium_pass', name: '👑 Премиум', desc: 'ВСЁ СРАЗУ', price: 1999, salePrice: 1499, emoji: '👑', type: 'premium', discount: 25 }
-  ];
-
-  const promoCodes = {
-    '131984': { name: 'Секретный', reward: { type: 'special', currency: 1319, premiumCurrency: 84, unlockAll: true, immortality: true, description: '🎉 СЕКРЕТНЫЙ КОД АКТИВИРОВАН!' }},
-    'HORROR100': { name: 'Хоррор', reward: { type: 'currency', currency: 500, description: '🎃 +500 💀' }},
-    'PREMIUM': { name: 'Премиум', reward: { type: 'premium', currency: 1000, premiumCurrency: 200, description: '👑 ПРЕМИУМ!' }}
-  };
-
-  function saveGame() {
-    try {
-      const data = { currency, premiumCurrency, completedStories: [...completedStories], deathCount, winCount, playerName, premiumStatus: { isPremium, hasImmortality, allStoriesUnlocked }, purchasedItems: [...purchasedItems], purchasedStories: [...purchasedStories], promoCodesUsed: [...promoCodesUsed] };
-      localStorage.setItem('h100_save', JSON.stringify(data));
-    } catch(e) {}
-  }
-
-  function loadGame() {
-    try {
-      const data = localStorage.getItem('h100_save');
-      if (data) {
-        const p = JSON.parse(data);
-        currency = p.currency || 0;
-        premiumCurrency = p.premiumCurrency || 0;
-        completedStories = new Set(p.completedStories || []);
-        deathCount = p.deathCount || 0;
-        winCount = p.winCount || 0;
-        playerName = p.playerName || '';
-        if (p.premiumStatus) {
-          isPremium = p.premiumStatus.isPremium || false;
-          hasImmortality = p.premiumStatus.hasImmortality || false;
-          allStoriesUnlocked = p.premiumStatus.allStoriesUnlocked || false;
+    // ============================================================
+    // 9. ГЕНЕРАЦИЯ СЦЕН
+    // ============================================================
+    function generateStoryScenes(story) {
+      const scenes = {
+        start: {
+          text: `${playerName}, ты в ${story.title}.\n${story.desc}. Тьма окутывает тебя.\n\nЧто будешь делать?`,
+          choices: [
+            { text: '🔦 Исследовать тёмный угол', next: 'scene_2' },
+            { text: '🕯️ Осторожно осмотреться', next: 'scene_3' },
+            { text: '🏃 Бежать вперёд', next: 'scene_4' }
+          ]
+        },
+        scene_2: {
+          text: `${playerName}, ты идёшь в темноту... Ты слышишь шаги.\nКто-то приближается.`,
+          choices: [
+            { text: '⚔️ Вступить в бой', next: 'scene_fight' },
+            { text: '🔦 Использовать свет', next: 'scene_light' }
+          ]
+        },
+        scene_fight: {
+          text: `${playerName}, ты вступаешь в бой... Тьма поглощает тебя.`,
+          choices: [{ text: '💀 КОНЕЦ', next: 'ending_lose1' }]
+        },
+        scene_light: {
+          text: `${playerName}, ты включаешь свет и видишь выход!\n\n🏆 ПОБЕДА!`,
+          choices: [{ text: '🏆 ЗАВЕРШИТЬ', next: 'ending_win1' }]
+        },
+        scene_3: {
+          text: `${playerName}, ты осматриваешься. Находишь старый ключ.\nОн блестит в темноте.`,
+          choices: [
+            { text: '🔑 Взять ключ', next: 'scene_key' },
+            { text: '🔙 Вернуться', next: 'start' }
+          ]
+        },
+        scene_key: {
+          text: `${playerName}, ты берёшь ключ. Он открывает тайную дверь!\n\n🏆 ПОБЕДА!`,
+          choices: [{ text: '🏆 ЗАВЕРШИТЬ', next: 'ending_win1' }]
+        },
+        scene_4: {
+          text: `${playerName}, ты бежишь... Выход закрыт.\nТы слышишь смех за спиной.`,
+          choices: [{ text: '💀 КОНЕЦ', next: 'ending_lose2' }]
+        },
+        ending_win1: {
+          text: `🏆 ПОБЕДА 🏆\n\n${playerName}, ты прошёл "${story.title}"!\nТы выжил и победил страх.`,
+          choices: [{ text: '📖 В меню', next: 'menu' }]
+        },
+        ending_lose1: {
+          text: `💀 ПОРАЖЕНИЕ 💀\n\n${playerName}, тьма поглотила тебя.`,
+          choices: [{ text: '📖 В меню', next: 'menu' }]
+        },
+        ending_lose2: {
+          text: `💀 ПОРАЖЕНИЕ 💀\n\n${playerName}, ты исчез навсегда.`,
+          choices: [{ text: '📖 В меню', next: 'menu' }]
         }
-        purchasedItems = new Set(p.purchasedItems || []);
-        purchasedStories = new Set(p.purchasedStories || []);
-        promoCodesUsed = new Set(p.promoCodesUsed || []);
+      };
+      return scenes;
+    }
+
+    const storyCache = {};
+
+    function getStoryScenes(story) {
+      const key = story.id;
+      if (!storyCache[key]) {
+        storyCache[key] = generateStoryScenes(story);
       }
-    } catch(e) {}
-  }
-
-  const mainScreen = document.getElementById('main-screen');
-  const gameScreen = document.getElementById('game-screen');
-  const mainCurrency = document.getElementById('mainCurrency');
-  const mainPremium = document.getElementById('mainPremium');
-  const mainDeaths = document.getElementById('mainDeaths');
-  const mainWins = document.getElementById('mainWins');
-  const mainCompleted = document.getElementById('mainCompleted');
-  const mainStoryCount = document.getElementById('mainStoryCount');
-  const mainShopGrid = document.getElementById('mainShopGrid');
-  const mainStoriesGrid = document.getElementById('mainStoriesGrid');
-  const filterButtons = document.getElementById('filter-buttons');
-  const gameStoryName = document.getElementById('gameStoryName');
-  const gameTitle = document.getElementById('gameTitle');
-  const storyText = document.getElementById('story-text');
-  const choicesContainer = document.getElementById('choices-container');
-  const container = document.getElementById('gameContainer');
-  const notification = document.getElementById('notification');
-  const promoInput = document.getElementById('promo-input');
-  const promoBtn = document.getElementById('promo-btn');
-
-  function updateUI() {
-    mainCurrency.textContent = currency;
-    mainPremium.textContent = premiumCurrency;
-    mainDeaths.textContent = deathCount;
-    mainWins.textContent = winCount;
-    mainCompleted.textContent = completedStories.size;
-    mainStoryCount.textContent = completedStories.size + ' из 100';
-    
-    if (isPremium) {
-      container.classList.add('premium-border');
-      gameTitle.classList.add('premium-title');
-    } else {
-      container.classList.remove('premium-border');
-      gameTitle.classList.remove('premium-title');
+      return storyCache[key];
     }
-    
-    if (promoCodesUsed.has('131984')) {
-      promoInput.value = '131984';
-      promoBtn.textContent = '✅';
-      promoBtn.classList.add('used');
-      promoInput.disabled = true;
-    }
-    
-    renderShop();
-    renderStories();
-    saveGame();
-  }
 
-  function showNotification(text, type = 'danger', duration = 2500) {
-    notification.textContent = text;
-    notification.className = 'active ' + type;
-    clearTimeout(notification._timeout);
-    notification._timeout = setTimeout(() => { notification.className = ''; }, duration);
-  }
+    // ============================================================
+    // 10. ОТРИСОВКА ИГРЫ (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+    // ============================================================
+    function renderGameState(stateId) {
+      const story = allStories.find(s => s.id === currentStoryId);
+      if (!story) {
+        storyText.textContent = 'Ошибка: история не найдена.';
+        choicesContainer.innerHTML = '';
+        return;
+      }
 
-  function renderShop() {
-    mainShopGrid.innerHTML = '';
-    
-    // Добавляем премиум-истории в магазин
-    const premiumStories = allStories.filter(s => s.isPremium && !purchasedStories.has(s.id) && !allStoriesUnlocked);
-    
-    for (const story of premiumStories.slice(0, 3)) {
-      const div = document.createElement('div');
-      div.className = 'shop-item-main premium-story-item';
+      const scenes = getStoryScenes(story);
+      const node = scenes[stateId];
       
-      div.innerHTML = `
-        <span class="item-emoji">${story.emoji}</span>
-        <div class="item-info">
-          <div class="item-name">${story.title}</div>
-          <div class="item-desc">Премиум-история</div>
-        </div>
-        <div class="item-price-block">
-          <span class="item-price">${story.premiumPrice}₽</span>
-          <button class="buy-btn">КУПИТЬ</button>
-        </div>
-      `;
-      
-      div.querySelector('.buy-btn').addEventListener('click', function(e) {
-        e.stopPropagation();
-        openPayment({ id: 'story_' + story.id, name: story.title, emoji: story.emoji, price: story.premiumPrice, salePrice: story.premiumPrice, type: 'story', storyId: story.id, discount: 0 });
-      });
-      
-      mainShopGrid.appendChild(div);
+      if (!node) {
+        storyText.textContent = 'Ошибка: сцена не найдена.';
+        choicesContainer.innerHTML = '';
+        return;
+      }
+
+      if (stateId === 'ending_win1') {
+        isWin = true;
+        winCount++;
+        
+        // ИСПРАВЛЕНИЕ: награда выдаётся только за первое прохождение
+        if (!completedStories.has(story.id)) {
+          const reward = story.reward || 50;
+          currency += reward;
+          showNotification(`🏆 ПОБЕДА! +${reward} 💀`, 'win', 3000);
+          completedStories.add(story.id);
+        } else {
+          showNotification(`🏆 СНОВА ПОБЕДА!`, 'win', 1500);
+        }
+        
+        container.classList.add('win-border');
+        updateUI();
+        saveGame();
+      } 
+      else if (stateId.startsWith('ending_lose')) {
+        isGameOver = true;
+        deathCount++;
+        if (!hasImmortality) {
+          showNotification('💀 ТЫ ПРОИГРАЛ...', 'danger', 2000);
+        } else {
+          showNotification('💀 Амулет бессмертия спас тебя!', 'premium', 2000);
+        }
+        updateUI();
+        saveGame();
+      } 
+      else if (stateId === 'start') {
+        isGameOver = false;
+        isWin = false;
+        container.classList.remove('win-border', 'danger-border');
+      }
+
+      storyText.textContent = node.text;
+
+      choicesContainer.innerHTML = '';
+      if (node.choices && node.choices.length > 0) {
+        node.choices.forEach((choice) => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          
+          if (choice.text.includes('ПОБЕДА') || choice.text.includes('🏆')) {
+            btn.classList.add('win-option');
+          }
+          if (choice.text.includes('КОНЕЦ') || choice.text.includes('💀')) {
+            btn.classList.add('danger-option');
+          }
+          if (choice.next === 'menu' || choice.next.startsWith('ending_')) {
+            btn.classList.add('final-btn');
+          }
+          
+          btn.textContent = choice.text;
+          
+          btn.addEventListener('click', function() {
+            const nextId = choice.next;
+            
+            if (nextId === 'menu') {
+              goToMainScreen();
+              return;
+            }
+            
+            if (scenes[nextId]) {
+              renderGameState(nextId);
+            } else {
+              renderGameState('ending_lose1');
+            }
+          });
+          choicesContainer.appendChild(btn);
+        });
+      }
+
+      updateUI();
     }
-    
-    // Обычные товары
-    for (const item of shopItems) {
-      const div = document.createElement('div');
-      div.className = 'shop-item-main';
+
+    // ============================================================
+    // 11. ПЛАТЁЖНАЯ СИСТЕМА
+    // ============================================================
+    let currentPaymentItem = null;
+
+    function openPayment(item) {
+      currentPaymentItem = item;
       const price = isSaleActive ? item.salePrice : item.price;
-      const discount = isSaleActive && item.discount > 0;
-      let statusText = 'КУПИТЬ';
-      let disabled = false;
-      let ownedClass = '';
+      const formattedPrice = price.toLocaleString('ru-RU');
       
-      if (item.type !== 'currency') {
-        const active = (item.type === 'unlock' && allStoriesUnlocked) ||
-                      (item.type === 'extreme' && isPremium) ||
-                      (item.type === 'immortality' && hasImmortality) ||
-                      (item.type === 'premium' && isPremium);
-        if (active) { statusText = '✓'; disabled = true; ownedClass = 'owned-btn'; }
-      }
-      
-      div.innerHTML = `
-        ${discount ? '<span class="discount-badge">-' + item.discount + '%</span>' : ''}
-        <span class="item-emoji">${item.emoji}</span>
-        <div class="item-info">
-          <div class="item-name">${item.name}</div>
-          <div class="item-desc">${item.desc}</div>
-        </div>
-        <div class="item-price-block">
-          <span class="item-price">${discount ? '<span style="font-size:0.7rem;color:#ff4444;text-decoration:line-through;">' + item.price + '₽</span> ' : ''}${price}₽</span>
-          ${item.type === 'currency' ? '<span class="item-bonus">+' + item.amount + ' 💀</span>' : ''}
-          <button class="buy-btn ' + ownedClass + '" ' + (disabled ? 'disabled' : '') + '>' + statusText + '</button>
-        </div>
+      document.getElementById('paymentItem').innerHTML = `
+        <span class="emoji">${item.emoji}</span>
+        <div class="price">${formattedPrice} ₽</div>
+        <div style="font-size:0.7rem;opacity:0.5;">${item.name}</div>
+        ${item.discount > 0 ? `<div style="color:#44ff44;font-size:0.8rem;">🔥 Скидка ${item.discount}%</div>` : ''}
       `;
+      document.getElementById('paymentStatus').textContent = 'Заполните данные для оплаты';
+      document.getElementById('paymentStatus').className = 'payment-status';
+      document.getElementById('cardNumber').value = '4242 4242 4242 4242';
+      document.getElementById('cardExpiry').value = '12/26';
+      document.getElementById('cardCvc').value = '123';
+      document.getElementById('cardName').value = 'ИВАН ИВАНОВ';
+      document.getElementById('payment-overlay').classList.add('active');
+      document.getElementById('paymentSubmit').disabled = false;
+    }
+
+    function closePayment() {
+      document.getElementById('payment-overlay').classList.remove('active');
+      currentPaymentItem = null;
+    }
+
+    function validateCard(number) {
+      const cleaned = number.replace(/\s/g, '');
+      if (cleaned.length < 16) return false;
+      let sum = 0, alternate = false;
+      for (let i = cleaned.length - 1; i >= 0; i--) {
+        let n = parseInt(cleaned[i]);
+        if (alternate) { n *= 2; if (n > 9) n -= 9; }
+        sum += n;
+        alternate = !alternate;
+      }
+      return sum % 10 === 0;
+    }
+
+    function processPayment() {
+      const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+      const expiry = document.getElementById('cardExpiry').value;
+      const cvc = document.getElementById('cardCvc').value;
+      const name = document.getElementById('cardName').value.trim();
       
-      if (!disabled) {
-        div.querySelector('.buy-btn').addEventListener('click', function(e) {
-          e.stopPropagation();
-          openPayment(item);
-        });
+      const statusEl = document.getElementById('paymentStatus');
+      
+      if (cardNumber.length < 16 || !validateCard(cardNumber)) {
+        statusEl.textContent = '❌ Неверный номер карты';
+        statusEl.className = 'payment-status error';
+        return;
+      }
+      if (expiry.length < 5 || cvc.length < 3 || name.length < 2) {
+        statusEl.textContent = '❌ Заполните все поля';
+        statusEl.className = 'payment-status error';
+        return;
       }
       
-      mainShopGrid.appendChild(div);
-    }
-  }
-
-  function renderStories() {
-    mainStoriesGrid.innerHTML = '';
-    let filtered = allStories;
-    
-    if (currentFilter === 'premium') {
-      filtered = allStories.filter(s => s.isPremium);
-    } else if (currentFilter !== 'all') {
-      filtered = allStories.filter(s => s.category === currentFilter);
-    }
-    
-    for (const story of filtered) {
-      const card = document.createElement('div');
-      card.className = 'story-card-main';
-      const completed = completedStories.has(story.id);
-      const isPremiumLocked = story.isPremium && !purchasedStories.has(story.id) && !allStoriesUnlocked;
-      const locked = story.locked && !completed && !allStoriesUnlocked;
+      statusEl.textContent = '⏳ Обработка платежа...';
+      statusEl.className = 'payment-status';
+      document.getElementById('paymentSubmit').disabled = true;
       
-      if (completed) card.classList.add('completed-card');
-      if (locked) card.classList.add('locked-card');
-      if (isPremiumLocked) card.classList.add('premium-card');
-      
-      let status = completed ? '✓' : locked ? '🔒' : isPremiumLocked ? '💰' : '▶';
-      let statusClass = completed ? 'completed' : locked ? 'locked' : isPremiumLocked ? 'premium' : 'available';
-      
-      card.innerHTML = `
-        <span class="cat-tag">${story.categoryEmoji}</span>
-        <span class="emoji">${story.emoji}</span>
-        <div class="title">${story.title}</div>
-        ${isPremiumLocked ? '<div class="price-tag">' + story.premiumPrice + '₽</div>' : ''}
-        <div class="status ${statusClass}">${status}</div>
-      `;
-      
-      card.addEventListener('click', function() {
-        if (locked) {
-          showNotification('🔒 Заблокировано!', 'danger', 2000);
-          return;
+      setTimeout(() => {
+        statusEl.textContent = '✅ ПЛАТЁЖ УСПЕШНО ПРОВЕДЁН!';
+        statusEl.className = 'payment-status success';
+        
+        if (currentPaymentItem) {
+          applyPurchase(currentPaymentItem);
         }
-        if (isPremiumLocked) {
-          showNotification('💰 Премиум-история! Купите в магазине.', 'premium', 3000);
-          return;
-        }
-        startStory(story.id);
-      });
-      
-      mainStoriesGrid.appendChild(card);
+        
+        setTimeout(() => {
+          closePayment();
+          document.getElementById('paymentSubmit').disabled = false;
+        }, 1500);
+      }, 1500);
     }
-  }
 
-  function startStory(storyId) {
-    const story = allStories.find(s => s.id === storyId);
-    if (!story) return;
-    
-    currentStoryId = storyId;
-    mainScreen.style.display = 'none';
-    gameScreen.classList.add('active');
-    gameStoryName.textContent = story.emoji + ' ' + story.title;
-    gameTitle.textContent = story.emoji + ' ' + story.title;
-    renderGame('start');
-    updateUI();
-  }
-
-  function renderGame(state) {
-    const story = allStories.find(s => s.id === currentStoryId);
-    if (!story) return;
-
-    const scenes = {
-      start: {
-        text: playerName + ', ты в ' + story.title + '.\nТьма окутывает тебя.',
-        choices: [
-          { text: '🔦 Исследовать тёмный угол', next: 's2' },
-          { text: '🕯️ Осторожно осмотреться', next: 's3' },
-          { text: '🏃 Бежать вперёд', next: 's4' }
-        ]
-      },
-      s2: {
-        text: 'Ты слышишь шаги...',
-        choices: [
-          { text: '⚔️ В бой', next: 'lose' },
-          { text: '🔦 Свет', next: 'win' }
-        ]
-      },
-      s3: {
-        text: 'Ты находишь старый ключ.',
-        choices: [
-          { text: '🔑 Взять', next: 'win' },
-          { text: '🔙 Назад', next: 'start' }
-        ]
-      },
-      s4: {
-        text: 'Выход закрыт...',
-        choices: [{ text: '💀 Конец', next: 'lose' }]
-      },
-      win: {
-        text: '🏆 ПОБЕДА!',
-        choices: [{ text: '📖 Меню', next: 'menu' }]
-      },
-      lose: {
-        text: '💀 ПРОИГРЫШ',
-        choices: [{ text: '📖 Меню', next: 'menu' }]
+    function applyPurchase(item) {
+      purchasedItems.add(item.id);
+      
+      switch (item.type) {
+        case 'currency':
+          currency += item.amount;
+          premiumCurrency += Math.floor(item.price / 10);
+          showNotification(`💰 +${item.amount} 💀`, 'premium', 2000);
+          break;
+        case 'unlock':
+          allStoriesUnlocked = true;
+          showNotification('🔓 ВСЕ ИСТОРИИ РАЗБЛОКИРОВАНЫ!', 'premium', 3000);
+          break;
+        case 'extreme':
+          isPremium = true;
+          showNotification('🎭 РЕЖИМ "ЭКСТРИМ" АКТИВИРОВАН!', 'premium', 3000);
+          break;
+        case 'immortality':
+          hasImmortality = true;
+          showNotification('💀 АМУЛЕТ БЕССМЕРТИЯ АКТИВИРОВАН!', 'premium', 3000);
+          break;
+        case 'premium':
+          isPremium = true;
+          hasImmortality = true;
+          allStoriesUnlocked = true;
+          currency += 5000;
+          premiumCurrency += 500;
+          showNotification('👑 ПРЕМИУМ АКТИВИРОВАН!', 'premium', 4000);
+          break;
       }
-    };
-
-    const node = scenes[state];
-    if (!node) { storyText.textContent = 'Ошибка'; return; }
-
-    if (state === 'win') {
-      winCount++;
-      if (!completedStories.has(story.id)) completedStories.add(story.id);
-      currency += story.reward || 50;
-      showNotification('🏆 +' + (story.reward || 50) + ' 💀', 'win', 3000);
-      container.classList.add('win-border');
-    } else if (state === 'lose') {
-      deathCount++;
-      showNotification(hasImmortality ? '💀 Амулет спас!' : '💀 Проигрыш...', hasImmortality ? 'premium' : 'danger', 2000);
-    } else if (state === 'start') {
-      container.classList.remove('win-border');
+      
+      if (!localStorage.getItem('h100_first_purchase')) {
+        currency += 50;
+        localStorage.setItem('h100_first_purchase', 'true');
+        showNotification('🎁 БОНУС ЗА ПЕРВУЮ ПОКУПКУ! +50 💀', 'premium', 3000);
+      }
+      
+      updateUI();
+      saveGame();
     }
 
-    storyText.textContent = node.text;
-    choicesContainer.innerHTML = '';
-    
-    node.choices.forEach(choice => {
-      const btn = document.createElement('button');
-      btn.className = 'choice-btn';
-      if (choice.text.includes('🏆')) btn.classList.add('win-option');
-      if (choice.text.includes('💀')) btn.classList.add('danger-option');
-      btn.textContent = choice.text;
-      
-      btn.addEventListener('click', function() {
-        if (choice.next === 'menu') {
-          goToMainScreen();
-          return;
-        }
-        renderGame(choice.next);
-      });
-      
-      choicesContainer.appendChild(btn);
+    // ============================================================
+    // 12. НАВИГАЦИЯ
+    // ============================================================
+    function goToMainScreen() {
+      gameScreen.classList.remove('active');
+      mainScreen.style.display = 'block';
+      updateUI();
+    }
+
+    function resetGame() {
+      const story = allStories.find(s => s.id === currentStoryId);
+      if (story) {
+        renderGameState('start');
+      }
+      updateUI();
+    }
+
+    // ============================================================
+    // 13. ФИЛЬТРЫ ИСТОРИЙ
+    // ============================================================
+    filterButtons.addEventListener('click', function(e) {
+      if (e.target.tagName === 'BUTTON') {
+        const filter = e.target.getAttribute('data-filter');
+        currentFilter = filter;
+        
+        const buttons = filterButtons.querySelectorAll('button');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        renderAllStories();
+      }
     });
 
-    updateUI();
-  }
+    // ============================================================
+    // 14. ИНИЦИАЛИЗАЦИЯ
+    // ============================================================
+    const nameOverlay = document.getElementById('name-overlay');
+    const nameInput = document.getElementById('name-input');
+    const nameSubmit = document.getElementById('name-submit');
 
-  function goToMainScreen() {
-    gameScreen.classList.remove('active');
-    mainScreen.style.display = 'block';
-    updateUI();
-  }
-
-  function openPayment(item) {
-    currentPaymentItem = item;
-    const price = isSaleActive ? (item.salePrice || item.price) : item.price;
-    document.getElementById('paymentItem').innerHTML = `
-      <span class="emoji">${item.emoji || '🪙'}</span>
-      <div class="price">${price} ₽</div>
-      <div style="font-size:0.9rem;">${item.name}</div>
-      ${item.type === 'story' ? '<div style="color:#ffd700;font-size:0.8rem;margin-top:5px;">📖 Премиум-история</div>' : ''}
-    `;
-    document.getElementById('paymentStatus').textContent = 'Заполните данные';
-    document.getElementById('paymentStatus').className = 'payment-status';
-    document.getElementById('cardNumber').value = '4242 4242 4242 4242';
-    document.getElementById('cardExpiry').value = '12/26';
-    document.getElementById('cardCvc').value = '123';
-    document.getElementById('cardName').value = 'ИВАН ИВАНОВ';
-    document.getElementById('payment-overlay').classList.add('show');
-    document.getElementById('paymentSubmit').disabled = false;
-  }
-
-  function closePayment() {
-    document.getElementById('payment-overlay').classList.remove('show');
-    currentPaymentItem = null;
-  }
-
-  function processPayment() {
-    const statusEl = document.getElementById('paymentStatus');
-    statusEl.textContent = '⏳ Обработка...';
-    document.getElementById('paymentSubmit').disabled = true;
-    
-    setTimeout(() => {
-      statusEl.textContent = '✅ УСПЕШНО!';
-      statusEl.className = 'payment-status success';
-      
-      if (currentPaymentItem) {
-        const item = currentPaymentItem;
-        
-        if (item.type === 'story') {
-          purchasedStories.add(item.storyId);
-          showNotification('📖 История "' + item.name + '" открыта!', 'premium', 3000);
-        } else {
-          purchasedItems.add(item.id);
-          
-          switch (item.type) {
-            case 'currency':
-              currency += item.amount;
-              premiumCurrency += Math.floor(item.price / 10);
-              showNotification('💰 +' + item.amount + ' 💀', 'premium', 2000);
-              break;
-            case 'unlock':
-              allStoriesUnlocked = true;
-              showNotification('🔓 ВСЁ ОТКРЫТО!', 'premium', 3000);
-              break;
-            case 'extreme':
-              isPremium = true;
-              showNotification('🎭 ЭКСТРИМ!', 'premium', 3000);
-              break;
-            case 'immortality':
-              hasImmortality = true;
-              showNotification('💀 БЕССМЕРТИЕ!', 'premium', 3000);
-              break;
-            case 'premium':
-              isPremium = true;
-              hasImmortality = true;
-              allStoriesUnlocked = true;
-              currency += 5000;
-              premiumCurrency += 500;
-              showNotification('👑 ПРЕМИУМ!', 'premium', 4000);
-              break;
-          }
-        }
-        
-        if (!localStorage.getItem('h100_first_purchase')) {
-          currency += 50;
-          localStorage.setItem('h100_first_purchase', 'true');
-          showNotification('🎁 БОНУС +50 💀', 'premium', 3000);
-        }
-      }
-      
-      setTimeout(() => { closePayment(); }, 1500);
+    nameSubmit.addEventListener('click', function() {
+      const name = nameInput.value.trim() || 'Незнакомец';
+      playerName = name;
+      nameOverlay.style.display = 'none';
+      loadGame();
       updateUI();
-    }, 1500);
-  }
+      document.getElementById('horror-bg').classList.add('active');
+      showNotification(`👋 Добро пожаловать, ${playerName}!`, 'win', 2000);
+    });
 
-  function activatePromoCode(code) {
-    const upperCode = code.toUpperCase();
-    if (promoCodesUsed.has(upperCode)) {
-      showNotification('❌ Уже использован!', 'danger', 2000);
-      return false;
-    }
-    const promo = promoCodes[upperCode];
-    if (!promo) {
-      showNotification('❌ Неверный код!', 'danger', 2000);
-      return false;
-    }
-    
-    const r = promo.reward;
-    if (r.type === 'special') {
-      currency += r.currency;
-      premiumCurrency += r.premiumCurrency;
-      allStoriesUnlocked = true;
-      hasImmortality = true;
-      isPremium = true;
-    } else if (r.type === 'currency') {
-      currency += r.currency;
-    } else if (r.type === 'premium') {
-      currency += r.currency;
-      premiumCurrency += r.premiumCurrency;
-      isPremium = true;
-    }
-    
-    promoCodesUsed.add(upperCode);
-    const anim = document.getElementById('promo-animation');
-    anim.classList.add('show');
-    setTimeout(() => anim.classList.remove('show'), 2000);
-    showNotification(r.description, 'special', 4000);
-    updateUI();
-    return true;
-  }
+    nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') nameSubmit.click(); });
 
-  filterButtons.addEventListener('click', function(e) {
-    if (e.target.tagName === 'BUTTON') {
-      currentFilter = e.target.getAttribute('data-filter');
-      filterButtons.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-      e.target.classList.add('active');
-      renderStories();
-    }
-  });
+    document.getElementById('paymentClose').addEventListener('click', closePayment);
+    document.getElementById('paymentSubmit').addEventListener('click', processPayment);
+    document.getElementById('payment-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closePayment();
+    });
 
-  document.getElementById('name-submit').addEventListener('click', function() {
-    playerName = document.getElementById('name-input').value.trim() || 'Незнакомец';
-    document.getElementById('name-overlay').style.display = 'none';
+    resetBtn.addEventListener('click', resetGame);
+    backMenuBtn.addEventListener('click', goToMainScreen);
+    gameBackLink.addEventListener('click', goToMainScreen);
+
+    // ============================================================
+    // 15. АВТОЗАПУСК
+    // ============================================================
     loadGame();
     updateUI();
-    document.getElementById('horror-bg').classList.add('active');
-    showNotification('👋 ' + playerName + '!', 'win', 2000);
-  });
 
-  document.getElementById('name-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') document.getElementById('name-submit').click();
-  });
-
-  document.getElementById('paymentClose').addEventListener('click', closePayment);
-  document.getElementById('paymentSubmit').addEventListener('click', processPayment);
-  
-  document.getElementById('reset-btn').addEventListener('click', function() { renderGame('start'); });
-  document.getElementById('back-menu-btn').addEventListener('click', goToMainScreen);
-  document.getElementById('gameBackLink').addEventListener('click', goToMainScreen);
-  
-  promoBtn.addEventListener('click', function() {
-    const code = promoInput.value.trim();
-    if (!code) { showNotification('⚠️ Введите код!', 'danger', 2000); return; }
-    if (activatePromoCode(code)) {
-      promoBtn.textContent = '✅';
-      promoBtn.classList.add('used');
-      promoInput.disabled = true;
+    if (playerName) {
+      nameOverlay.style.display = 'none';
+      document.getElementById('horror-bg').classList.add('active');
     }
-  });
 
-  promoInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') promoBtn.click();
-  });
-
-  loadGame();
-  updateUI();
-  
-  if (playerName) {
-    document.getElementById('name-overlay').style.display = 'none';
-    document.getElementById('horror-bg').classList.add('active');
-  }
-})();
+  })();
 </script>
 </body>
 </html>
